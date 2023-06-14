@@ -175,13 +175,11 @@ for trial in trials:
 
         data.sample_tone[trial] = 'L'
         data.t_sample_tone[trial] = time.time() * 1000 - data._t_start_abs[trial]
+        if TTL_opto.pulsing:
+            TTL_opto.pulsing = False
         tone.play()
         data.sample_tone_end[trial] = (time.time() * 1000
                                        - data._t_start_abs[trial])
-        if ttl_experiment == 'y' and performance == 1:
-            data.opto_start[trial] = time.time() * 1000 - data._t_start_abs[trial]
-            thread_ttl.start()
-            data.opto_end[trial] = time.time() * 1000 - data._t_start_abs[trial]
         response = 'N'
         length_L = len(lick_port_L._licks)
         length_R = len(lick_port_R._licks)
@@ -240,7 +238,7 @@ for trial in trials:
 
         data.sample_tone[trial] = 'R'
         data.t_sample_tone[trial] = time.time() * 1000 - data._t_start_abs[trial]
-        if TTL_opto.pulsing = True:
+        if TTL_opto.pulsing:
             TTL_opto.pulsing = False
         tone.play()  # Play left tone
         data.sample_tone_end[trial] = (time.time() * 1000
