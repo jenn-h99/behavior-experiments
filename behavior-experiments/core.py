@@ -721,7 +721,8 @@ class ProbSwitchRule():
     self.correct_trials: list
         Keeps a running count of the performance on recent trials. May be
         emptied after rule switch or supplementary rewards.
-    '''
+
+'''
 
     def __init__(self, tones: list, initial_rule: int, p_index: int,
                  criterion: list, countdown_start: int, expert: bool,
