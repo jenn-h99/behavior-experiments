@@ -654,14 +654,12 @@ class ttl():
     self.ISI_length: float
         The length(sec) of inter-stimulus-interval.
 
-    self.total_length: float
-        The length(sec) of total duration of opto per trial.
     '''
-    def __init__(self, pin, opto_stim_length, ISI_length, total_length):
+    def __init__(self, pin, opto_stim_length, ISI_length):
         self.pin = pin
         self.opto_stim_length = opto_stim_length
         self.ISI_length = ISI_length
-        self.total_length = total_length
+        self.pulsing = False
         # Setup GPIO pins for TTL pulses.
         GPIO.setup(self.pin, GPIO.OUT)
         GPIO.output(self.pin, False)
@@ -677,10 +675,24 @@ class ttl():
             GPIO.output(self.pin, False)
             time.sleep(self.ISI_length)
 
+    def pulsing_continuous(self):
+        '''
+        Pulse continuously, until an external
+        trigger is received.
+        '''
+
+        self.pulsing = True
+
+        while self.pulsing:
+            GPIO.output(self.pin, True)
+            time.sleep(self.opto_stim_length)
+            GPIO.output(self.pin, False)
+            time.sleep(self.ISI_length)
+
 
 
 class ProbSwitchRule():
-    '''
+'''
     The rule maps the association between tones, actions and associated
     outcomes.
 
