@@ -239,7 +239,7 @@ for trial in trials:
         tone.play()  # Play left tone
         data.sample_tone_end[trial] = (time.time() * 1000
                                        - data._t_start_abs[trial])
-        if TTL_opto.pulsing = True and performance == 1:
+        if TTL_opto.pulsing and performance == 1:
             data.opto_start[trial] = time.time() * 1000 - data._t_start_abs[trial]
             thread_ttl.start()
             data.opto_end[trial] = time.time() * 1000 - data._t_start_abs[trial]
