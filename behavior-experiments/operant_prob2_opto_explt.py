@@ -158,7 +158,7 @@ for trial in trials:
 
     left_trial_ = np.random.rand() < 0.5  # 50% chance of L trial
     # Initialize thread objects for pulsing continuous opto stimulation
-    thread_ttl = threading.Thread(target=TTL_opto.pulsing_continuous())
+    thread_ttl = threading.Thread(target=TTL_opto.pulsing_continuous)
     # Start lick recording threads
     thread_L.start()
     thread_R.start()
@@ -167,7 +167,6 @@ for trial in trials:
     # Left trial:--------------------------------------------------------------
     if left_trial_:
         tone = rule.L_tone
-
         data.sample_tone[trial] = 'L'
         data.t_sample_tone[trial] = time.time() * 1000 - data._t_start_abs[trial]
         if TTL_opto.pulsing:
@@ -183,10 +182,9 @@ for trial in trials:
         while time.time() * 1000 < resp_window_end:
             # If first lick is L (correct)
             if sum(lick_port_L._licks[(length_L - 1):]) > 0:
-                if performance == 1:
-                    data.opto_start[trial] = time.time() * 1000 - data._t_start_abs[trial]
-                    thread_ttl.start()
-                    data.opto_end[trial] = time.time() * 1000 - data._t_start_abs[trial]
+                data.opto_start[trial] = time.time() * 1000 - data._t_start_abs[trial]
+                thread_ttl.start()
+                data.opto_end[trial] = time.time() * 1000 - data._t_start_abs[trial]
                 # Reward delivery for correct lick
                 if np.random.rand() < rule.p_rew:
                     data.t_rew_l[trial] = (time.time() * 1000
@@ -250,10 +248,9 @@ for trial in trials:
         while time.time() * 1000 < resp_window_end:
             # If first lick is R (correct)
             if sum(lick_port_R._licks[(length_R - 1):]) > 0:
-                if performance == 1:
-                    data.opto_start[trial] = time.time() * 1000 - data._t_start_abs[trial]
-                    thread_ttl.start()
-                    data.opto_end[trial] = time.time() * 1000 - data._t_start_abs[trial]
+                data.opto_start[trial] = time.time() * 1000 - data._t_start_abs[trial]
+                thread_ttl.start()
+                data.opto_end[trial] = time.time() * 1000 - data._t_start_abs[trial]
                 # Stochastic reward delivery
                 if np.random.rand() < rule.p_rew:
                     data.t_rew_r[trial] = (time.time() * 1000
