@@ -165,6 +165,10 @@ for trial in trials:
 
     time.sleep(2)
 
+    if performance == 1:
+        data.opto_start[trial] = time.time() * 1000 - data._t_start_abs[trial]
+        thread_ttl.start()
+        data.opto_end[trial] = time.time() * 1000 - data._t_start_abs[trial]
     # Left trial:--------------------------------------------------------------
     if left_trial_:
         tone = rule.L_tone
@@ -236,10 +240,8 @@ for trial in trials:
 
         data.sample_tone[trial] = 'R'
         data.t_sample_tone[trial] = time.time() * 1000 - data._t_start_abs[trial]
-        if TTL_opto.pulsing and performance == 1:
-            data.opto_start[trial] = time.time() * 1000 - data._t_start_abs[trial]
-            thread_ttl.start()
-            data.opto_end[trial] = time.time() * 1000 - data._t_start_abs[trial]
+        if TTL_opto.pulsing = True:
+            TTL_opto.pulsing = False
         tone.play()  # Play left tone
         data.sample_tone_end[trial] = (time.time() * 1000
                                        - data._t_start_abs[trial])
