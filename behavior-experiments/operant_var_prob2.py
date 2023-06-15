@@ -172,7 +172,6 @@ for trial in trials:
         data.sample_tone[trial] = 'L'
         data.t_sample_tone[trial] = time.time() * 1000 - data._t_start_abs[trial]
 
-        if
         tone.play()
         data.sample_tone_end[trial] = (time.time() * 1000
                                        - data._t_start_abs[trial])
