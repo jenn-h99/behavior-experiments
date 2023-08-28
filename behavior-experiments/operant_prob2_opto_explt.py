@@ -1,4 +1,4 @@
-import time
+
 import RPi.GPIO as GPIO
 import numpy as np
 import threading
