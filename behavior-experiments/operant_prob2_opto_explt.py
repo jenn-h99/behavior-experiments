@@ -1,4 +1,4 @@
-
+import time
 import RPi.GPIO as GPIO
 import numpy as np
 import threading
@@ -6,15 +6,22 @@ import core
 from picamera import PiCamera
 from pygame import mixer
 
-protocol_name = 'prob_operant'
+protocol_name = 'operant_prob2_opto_explt'
 protocol_description = ('In this protocol, 1 of 2 sample cues (differing based'
-                        'on frequency) is immediately followed by a response '
+                        'on frequency) is followed by a one second delay'
+                        'which is immediately followed by a response '
                         'period. During this period, the first lickport that '
                         'registers a lick determines the animals response. '
                         'Correct responses trigger reward delivery from the '
                         'correct port with probability p_rew, while incorrect '
                         'or null responses are unrewarded. if 19/20 trials are'
-                        ' correct, the mouse is considered an "expert".')
+                        ' correct, the mouse is considered an "expert". Each expert phase '
+                        'has a countdown of 850 trials until the next p_rew. '
+                        'During the expert phase(s), optogenetics stimulation begins where '
+                        'only the correct responses (termed '
+                        'exploitation trials) will trigger optogenetics stimulation at 10Hz (TTL pulse '
+                        'of 5 milliseconds and pulse ISI of 95 milliseconds) from first correct lick for'
+                        'each trial until the tone delivery of the respective proceeding trial(s). '
 
 camera = PiCamera()  # Create camera object
 camera.start_preview(fullscreen=False, window=(0, -44, 350, 400))
