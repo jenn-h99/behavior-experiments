@@ -170,7 +170,7 @@ for trial in range(n_trials):
 
     response = 'N'
     length_L = len(lick_port_L.lick_voltage)
-    length_R = len(lick_port_R.lick_voltage)
+    length_R = len(flick_port_R.lick_voltage)
     resp_window_end = time.time()*1000 + response_window
 
     while time.time() * 1000 < resp_window_end:

@@ -196,6 +196,7 @@ for trial in trials:
                 if np.random.rand() < rule.p_rew:
                     data.t_rew_l[trial] = (time.time() * 1000
                                            - data._t_start_abs[trial])
+                    time.sleep(1)
                     water_L.Reward()
                     data.v_rew_l[trial] = reward_size
 
@@ -220,7 +221,7 @@ for trial in trials:
                 else:
                     data.t_rew_r[trial] = (time.time() * 1000
                                            - data._t_start_abs[trial])
-
+                    time.sleep(1)
                     water_R.Reward()
                     data.v_rew_r[trial] = reward_size
 
