@@ -6,6 +6,7 @@ import core
 from picamera import PiCamera
 from pygame import mixer
 
+
 protocol_name = 'operant_prob2_opto_explt'
 protocol_description = ('In this protocol, 1 of 2 sample cues (differing based'
                         'on frequency) is followed by a one second delay'
@@ -132,7 +133,6 @@ rule = core.ProbSwitchRule([highfreq, lowfreq], left_port, p_index, criterion,
 if ttl_experiment == 'y':
     # Set up ttl class instances opto stim TTL output
     TTL_opto = core.ttl(TTL_opto_PIN, 0.005, 0.095)
-
 # ------------------------------------------------------------------------------
 # Initialize experiment:
 # ------------------------------------------------------------------------------
@@ -162,7 +162,6 @@ for trial in trials:
     # Initialize thread objects for left and right lickport recording
     thread_L = threading.Thread(target=lick_port_L.Lick, args=(1000, 8))
     thread_R = threading.Thread(target=lick_port_R.Lick, args=(1000, 8))
-
     left_trial_ = np.random.rand() < 0.5  # 50% chance of L trial
     # Initialize thread objects for pulsing continuous opto stimulation
     thread_ttl = threading.Thread(target=TTL_opto.pulsing_continuous)
