@@ -454,11 +454,11 @@ class data():
         Use rclone to upload the HDF5 data file to a remote drive.
         '''
         # Find yesterday's data for this mouse
-        yesterday_files = [fname for fname in
+        yesterday_data = [fname for fname in
                            os.listdir('/home/pi/Desktop/yesterday_data')
                            if self.mouse_number in fname]
 
-        for fname in yesterday_files:  # Move files to temp data folder
+        for fname in yesterday_data:  # Move files to temp data folder
             os.system(f'mv /home/pi/Desktop/yesterday_data/{fname} '
                       '/home/pi/Desktop/temporary-data')
 
