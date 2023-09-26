@@ -422,10 +422,7 @@ if data.exp_quality == 'n':
 
 # Store the data in an HDF5 file and upload this file to a remote drive.
 data.Store()
-rclone_cfg_path = "/home/pi/.config/rclone/rclone.conf"
-data_repo_path = "data1:/Behaviour data/Jennifer/all mice"
-temp_data_path = "/home/pi/Desktop/temporary-data"
-data.rclone_upload(rclone_cfg_path, data_repo_path, temp_data_path)
+data.Rclone()
 
 # Delete the .wav files created for the experiment
 core.delete_tones()
