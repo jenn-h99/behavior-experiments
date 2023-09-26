@@ -21,7 +21,7 @@ protocol_description = ('In this protocol, 1 of 2 sample cues (differing based'
                         'only the correct responses (termed '
                         'exploitation trials) will trigger optogenetics stimulation at 10Hz (TTL pulse '
                         'of 5 milliseconds and pulse ISI of 95 milliseconds) from first correct lick for'
-                        'each trial until the tone delivery of the respective proceeding trial(s). '
+                        'each trial until the tone delivery of the respective proceeding trial(s). ')
 
 camera = PiCamera()  # Create camera object
 camera.start_preview(fullscreen=False, window=(0, -44, 350, 400))
