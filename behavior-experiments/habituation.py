@@ -232,4 +232,4 @@ data_repo_path = "data1:/Behaviour data/Jennifer/all mice"
 temp_data_path = "/home/pi/Desktop/temporary-data"
 data.rclone_upload(rclone_cfg_path, data_repo_path, temp_data_path)
 
-tone_end.delete()
+core.delete_tones()
