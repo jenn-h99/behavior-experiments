@@ -448,6 +448,31 @@ class data():
                                    'left_port(1) -> highfreq on left port; '
                                    'if pulse rule, left_port(1) -> multipulse'
                                    'on left port.')
+    def rclone_upload(self, rclone_cfg_path, data_repo_path, temp_data_path):
+
+        '''
+        Use rclone to create a directory in the data repository for the current
+        experiment, then copy the data file to that directory. A copy is also
+        kept locally in a temporary data directory.
+        '''
+        # Open rclone configuration
+        with open(rclone_cfg_path) as f:
+            rclone_cfg = f.read()
+
+        # If no directory for this mouse in data repo, create one.
+        mouse_path = data_repo_path + self.mouse
+        rclone.with_config(rclone_cfg).run_cmd(command='mkdir',
+                                               extra_args=[mouse_path])
+        # If no directory for this date, create one.
+        date_path = mouse_path + self.date_experiment
+        rclone.with_config(rclone_cfg).run_cmd(command='mkdir',
+                                               extra_args=[date_path])
+        # Copy data file into the date directory in data repo.
+        rclone.with_config(rclone_cfg).run_cmd(
+            command='copy', extra_args=[self.filename, date_path])
+        # Move the data file into the local temporary data folder
+        rclone.with_config(rclone_cfg).run_cmd(
+            command='mv', extra_args=[self.filename, temp_data_path])
 
     def Rclone(self):
         '''

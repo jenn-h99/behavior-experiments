@@ -422,7 +422,7 @@ if data.exp_quality == 'n':
 
 # Store the data in an HDF5 file and upload this file to a remote drive.
 data.Store()
-data.Rclone()
+data.rclone_upload(/home/pi/.config/rclone/rclone.conf, )
 
 # Delete the .wav files created for the experiment
 tone_end.delete()
