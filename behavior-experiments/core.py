@@ -474,32 +474,6 @@ class data():
         rclone.with_config(rclone_cfg).run_cmd(
             command='mv', extra_args=[self.filename, temp_data_path])
 
-    def Rclone(self):
-        '''
-        Use rclone to upload the HDF5 data file to a remote drive.
-        '''
-        # Find yesterday's data for this mouse
-        yesterday_data = [fname for fname in
-                           os.listdir('/home/pi/Desktop/yesterday_data')
-                           if self.mouse_number in fname]
-
-        for fname in yesterday_data:  # Move files to temp data folder
-            os.system(f'mv /home/pi/Desktop/yesterday_data/{fname} '
-                      '/home/pi/Desktop/temporary-data')
-
-        # Move current file to yesterday_data folder
-        os.system(f'mv /home/pi/Desktop/behavior-experiments/'
-                  f'behavior-experiments/{self.filename} '
-                  f'/home/pi/Desktop/yesterday_data')
-        # Create remote folder for today's data and copy file into that folder
-        os.system(f'rclone mkdir data1:"Behaviour data/Jennifer/'
-                  f'all mice/{self.mouse_number}"')
-        os.system(f'rclone mkdir data1:"Behaviour data/Jennifer/'
-                  f'all mice/{self.mouse_number}/{self.date_experiment}"')
-        os.system(f'rclone copy /home/pi/Desktop/yesterday_data/{self.filename}'
-                  f' data1:"Behaviour data/Jennifer/all mice/'
-                  f'{self.mouse_number}/{self.date_experiment}"')
-
 class Stepper():
     def __init__(self, n_trials, enablePIN, directionPIN, stepPIN, emptyPIN, side):
         self.n_trials = n_trials
