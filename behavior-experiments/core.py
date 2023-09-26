@@ -955,7 +955,7 @@ rff
     # Paths for rclone config file, data repo (on rclone) and a local directory
     # to temporarily store the fetched data.
     rclone_cfg_path = '/home/pi/.config/rclone/rclone.conf'
-    data_path = 'data1:Behaviour Data/Jennifer/all mice/'
+    data_path = 'data1:/Behaviour Data/Jennifer/all mice'
     temp_rclone_path = '/home/pi/Desktop/temp_rclone/'
     temp_data_path = '/home/pi/Desktop/temporary-data/'
 
