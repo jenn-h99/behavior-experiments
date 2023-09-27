@@ -460,7 +460,7 @@ class data():
             rclone_cfg = f.read()
 
         # If no directory for this mouse in data repo, create one.
-        mouse_path = data_repo_path + self.mouse
+        mouse_path = data_repo_path + self.mouse_numer
         rclone.with_config(rclone_cfg).run_cmd(command='mkdir',
                                                extra_args=[mouse_path])
         # If no directory for this date, create one.
