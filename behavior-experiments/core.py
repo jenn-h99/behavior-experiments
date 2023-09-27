@@ -467,12 +467,12 @@ class data():
                   f'behavior-experiments/{self.filename} '
                   f'/home/pi/Desktop/yesterday_data')
         # Create remote folder for today's data and copy file into that folder
-        os.system(f'rclone mkdir data1:"Behaviour data/Jennifer/'
+        os.system(f'rclone mkdir data1:"/Behaviour data/Jennifer/'
                   f'all mice/{self.mouse_number}"')
-        os.system(f'rclone mkdir data1:"Behaviour data/Jennifer/'
+        os.system(f'rclone mkdir data1:"/Behaviour data/Jennifer/'
                   f'all mice/{self.mouse_number}/{self.date_experiment}"')
         os.system(f'rclone copy /home/pi/Desktop/yesterday_data/{self.filename}'
-                  f' data1:"Behaviour data/Jennifer/all mice/'
+                  f' data1:"/Behaviour data/Jennifer/all mice/'
                   f'{self.mouse_number}/{self.date_experiment}"')
 
 
