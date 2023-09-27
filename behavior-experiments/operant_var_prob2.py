@@ -123,7 +123,9 @@ tone_end = core.PureTone(end_tone_freq, end_tone_length, vol=-25)
 rule = core.ProbSwitchRule([highfreq, lowfreq], left_port, p_index, criterion,
                            countdown_start, expert, countdown)
 
-TTL_opto = core.ttl(TTL_opto_PIN, 0.01, 0.04)
+if ttl_experiment == 'y':
+    # Set up ttl class instances opto stim TTL output
+    TTL_opto = core.ttl(TTL_opto_PIN, 0.01, 0.04)
 
 # ------------------------------------------------------------------------------
 # Initialize experiment:

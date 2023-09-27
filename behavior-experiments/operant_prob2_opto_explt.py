@@ -164,7 +164,8 @@ for trial in trials:
     thread_R = threading.Thread(target=lick_port_R.Lick, args=(1000, 8))
     left_trial_ = np.random.rand() < 0.5  # 50% chance of L trial
     # Initialize thread objects for pulsing continuous opto stimulation
-    thread_ttl = threading.Thread(target=TTL_opto.pulsing_continuous)
+    if ttl_experiment == 'y':
+        thread_ttl = threading.Thread(target=TTL_opto.pulsing_continuous)
     # Start lick recording threads
     thread_L.start()
     thread_R.start()
@@ -175,7 +176,7 @@ for trial in trials:
         tone = rule.L_tone
         data.sample_tone[trial] = 'L'
         data.t_sample_tone[trial] = time.time() * 1000 - data._t_start_abs[trial]
-        if TTL_opto.pulsing:
+        if ttl_experiment == 'y' and TTL_opto.pulsing:
             TTL_opto.pulsing = False
         tone.play()
         data.sample_tone_end[trial] = (time.time() * 1000
@@ -242,7 +243,7 @@ for trial in trials:
 
         data.sample_tone[trial] = 'R'
         data.t_sample_tone[trial] = time.time() * 1000 - data._t_start_abs[trial]
-        if TTL_opto.pulsing:
+        if ttl_experiment == 'y' and TTL_opto.pulsing:
             TTL_opto.pulsing = False
         tone.play()  # Play left tone
         data.sample_tone_end[trial] = (time.time() * 1000
