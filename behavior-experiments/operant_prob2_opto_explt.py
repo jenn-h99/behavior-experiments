@@ -189,9 +189,10 @@ for trial in trials:
         while time.time() * 1000 < resp_window_end:
             # If first lick is L (correct)
             if sum(lick_port_L._licks[(length_L - 1):]) > 0:
-                data.opto_start[trial] = time.time() * 1000 - data._t_start_abs[trial]
-                thread_ttl.start()
-                data.opto_end[trial] = time.time() * 1000 - data._t_start_abs[trial]
+                if ttl_experiment == 'y':
+                    data.opto_start[trial] = time.time() * 1000 - data._t_start_abs[trial]
+                    thread_ttl.start()
+                    data.opto_end[trial] = time.time() * 1000 - data._t_start_abs[trial]
                 # Reward delivery for correct lick
                 if np.random.rand() < rule.p_rew:
                     data.t_rew_l[trial] = (time.time() * 1000
@@ -256,9 +257,10 @@ for trial in trials:
         while time.time() * 1000 < resp_window_end:
             # If first lick is R (correct)
             if sum(lick_port_R._licks[(length_R - 1):]) > 0:
-                data.opto_start[trial] = time.time() * 1000 - data._t_start_abs[trial]
-                thread_ttl.start()
-                data.opto_end[trial] = time.time() * 1000 - data._t_start_abs[trial]
+                if ttl_experiment == 'y':
+                    data.opto_start[trial] = time.time() * 1000 - data._t_start_abs[trial]
+                    thread_ttl.start()
+                    data.opto_end[trial] = time.time() * 1000 - data._t_start_abs[trial]
                 # Stochastic reward delivery
                 if np.random.rand() < rule.p_rew:
                     data.t_rew_r[trial] = (time.time() * 1000
