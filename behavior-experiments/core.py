@@ -449,31 +449,30 @@ class data():
                                    'if pulse rule, left_port(1) -> multipulse'
                                    'on left port.')
 
-    def Rclone(self):
+    def Rclone(self, rclone_cfg_path, data_repo_path, temp_data_path):
         '''
-        Use rclone to upload the HDF5 data file to a remote drive.
+        Use rclone to create a directory in the data repository for the current
+        experiment, then copy the data file to that directory. A copy is also
+        kept locally in a temporary data directory.
         '''
-        # Find yesterday's data for this mouse
-        yesterday_data = [fname for fname in
-                          os.listdir('/home/pi/Desktop/yesterday_data')
-                          if self.mouse_number in fname]
+        # Open rclone configuration
+        with open(rclone_cfg_path) as f:
+            rclone_cfg = f.read()
 
-        for fname in yesterday_data:  # Move files to temp data folder
-            os.system(f'mv /home/pi/Desktop/yesterday_data/{fname} '
-                      '/home/pi/Desktop/temporary-data')
-
-        # Move current file to yesterday_data folder
-        os.system(f'mv /home/pi/Desktop/behavior-experiments/'
-                  f'behavior-experiments/{self.filename} '
-                  f'/home/pi/Desktop/yesterday_data')
-        # Create remote folder for today's data and copy file into that folder
-        os.system(f'rclone mkdir data1:"/Behaviour data/Jennifer/'
-                  f'all mice/{self.mouse_number}"')
-        os.system(f'rclone mkdir data1:"/Behaviour data/Jennifer/'
-                  f'all mice/{self.mouse_number}/{self.date_experiment}"')
-        os.system(f'rclone copy /home/pi/Desktop/yesterday_data/{self.filename}'
-                  f' data1:"/Behaviour data/Jennifer/all mice/'
-                  f'{self.mouse_number}/{self.date_experiment}"')
+        # If no directory for this mouse in data repo, create one.
+        mouse_path = data_repo_path + self.mouse
+        rclone.with_config(rclone_cfg).run_cmd(command='mkdir',
+                                               extra_args=[mouse_path])
+        # If no directory for this date, create one.
+        date_path = mouse_path + self.date_experiment
+        rclone.with_config(rclone_cfg).run_cmd(command='mkdir',
+                                               extra_args=[date_path])
+        # Copy data file into the date directory in data repo.
+        rclone.with_config(rclone_cfg).run_cmd(
+            command='copy', extra_args=[self.filename, date_path])
+        # Move the data file into the local temporary data folder
+        rclone.with_config(rclone_cfg).run_cmd(
+            command='mv', extra_args=[self.filename, temp_data_path])
 
 
 class Stepper():
