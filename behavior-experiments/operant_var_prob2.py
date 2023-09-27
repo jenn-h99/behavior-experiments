@@ -415,7 +415,7 @@ rclone_cfg_path = '/home/pi/.config/rclone/rclone.conf'
 data_repo_path = 'data1:/Behaviour Data/Jennifer/all mice'
 temp_rclone_path = '/home/pi/Desktop/temp_rclone/'
 temp_data_path = '/home/pi/Desktop/temporary-data/'
-data.Rclone()
+data.Rclone(rclone_cfg_path, data_repo_path, temp_data_path)
 
 # Delete the .wav files created for the experiment
 core.delete_tones()
