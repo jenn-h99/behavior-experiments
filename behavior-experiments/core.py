@@ -472,7 +472,7 @@ class data():
             command='copy', extra_args=[self.filename, date_path])
         # Move the data file into the local temporary data folder
         rclone.with_config(rclone_cfg).run_cmd(
-            command='mv', extra_args=[self.filename, temp_data_path])
+            command='move', extra_args=[self.filename, temp_data_path])
 
 
 class Stepper():
