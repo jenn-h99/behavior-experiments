@@ -227,6 +227,10 @@ if data.exp_quality == 'n':
 
 # Store the data in an HDF5 file and upload this file to a remote drive.
 data.Store()
+rclone_cfg_path = '/home/pi/.config/rclone/rclone.conf'
+data_repo_path = 'data1:/Behaviour Data/Jennifer/all mice'
+temp_rclone_path = '/home/pi/Desktop/temp_rclone/'
+temp_data_path = '/home/pi/Desktop/temporary-data/'
 data.Rclone()
 
 core.delete_tones()
