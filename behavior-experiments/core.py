@@ -976,7 +976,7 @@ rff
     # Get most recent date
     last_date = prev_dates['out'][-12:-2].decode()
 
-    last_data_path = f'{data_path}{mouse_number}/{last_date}/'
+    last_data_path = f'{data_repo_path}{mouse_number}/{last_date}/'
     # Copy all files from most recent date to the temp_data folder
 
     rclone.with_config(rclone_cfg).run_cmd(
@@ -987,7 +987,7 @@ rff
 
     last_file = sorted(os.listdir(temp_data_path))[-1]
 
-    with h5py.File(temp_data_repo_path+last_file, 'r') as f:
+    with h5py.File(temp_data_path+last_file, 'r') as f:
         # Get relevant information from the data file.
         prev_protocol = f.attrs['protocol_name']
         prev_user = f.attrs['experimenter']
