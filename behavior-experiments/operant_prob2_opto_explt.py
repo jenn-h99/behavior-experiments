@@ -29,8 +29,6 @@ camera.start_preview(fullscreen=False, window=(0, -44, 350, 400))
 
 # ------------------------------------------------------------------------------
 # Set experimental parameters:
-# ------------------------------------------------------------------------------
-data_path = 'data1:/Behaviour Data/Jennifer/all mice'
 experimenter = input('Initials: ')
 mouse_number = input('mouse number: ')
 mouse_weight = float(input('mouse weight(g): '))

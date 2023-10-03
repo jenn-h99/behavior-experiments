@@ -972,7 +972,7 @@ rff
 
     # Generate dictionary with a string listing all dates
     prev_dates = rclone.with_config(rclone_cfg).run_cmd(
-        command='lsf', extra_args=[data_path+str(mouse_number)])
+        command='lsf', extra_args=[data_repo_path+str(mouse_number)])
     # Get most recent date
     last_date = prev_dates['out'][-12:-2].decode()
 
@@ -987,7 +987,7 @@ rff
 
     last_file = sorted(os.listdir(temp_data_path))[-1]
 
-    with h5py.File(temp_data_path+last_file, 'r') as f:
+    with h5py.File(temp_data_repo_path+last_file, 'r') as f:
         # Get relevant information from the data file.
         prev_protocol = f.attrs['protocol_name']
         prev_user = f.attrs['experimenter']
