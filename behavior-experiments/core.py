@@ -982,7 +982,7 @@ rff
     rclone.with_config(rclone_cfg).run_cmd(
         command='copy', extra_args=[last_data_path, temp_data_path])
 
-    # os.system(f'rclone copy "{last_data_path}" {temp_data_path} --progress')
+    os.system(f'rclone copy "{last_data_path}" {temp_data_path} --progress')
     # Double quotes around last_data_path to make it a single argument.
 
     last_file = sorted(os.listdir(temp_data_path))[-1]
