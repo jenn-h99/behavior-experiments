@@ -15,7 +15,7 @@ pulse_length = 250
 # INITIALIZE PINS
 GPIO.setup(ttl_trigger_PIN, GPIO.OUT)
 GPIO.output(ttl_trigger_PIN, False)
-GPIO.setup(ttl_marker_PIN, GPIO.OUT)
+GPIO.setup(ttl_maker_PIN, GPIO.OUT)
 GPIO.output(ttl_marker_PIN, False)
 
 #SCRIPT
