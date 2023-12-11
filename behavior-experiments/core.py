@@ -658,10 +658,11 @@ class ttl():
         The length(sec) of inter-stimulus-interval.
 
     '''
-    def __init__(self, pin, opto_stim_length, ISI_length):
+    def __init__(self, pin, opto_stim_length, ISI_length, total_length):
         self.pin = pin
         self.opto_stim_length = opto_stim_length
         self.ISI_length = ISI_length
+        self.total_length = total_length
         # Setup GPIO pins for TTL pulses.
         GPIO.setup(self.pin, GPIO.OUT)
         GPIO.output(self.pin, False)

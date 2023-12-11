@@ -130,7 +130,7 @@ rule = core.ProbSwitchRule([highfreq, lowfreq], left_port, p_index, criterion,
 
 if ttl_experiment == 'y':
     # Set up ttl class instances opto stim TTL output 10 Hz
-    TTL_opto = core.ttl(TTL_opto_PIN, 0.005, 0.095)
+    TTL_opto = core.ttl(TTL_opto_PIN, 0.005, 0.095, 1)
 # ------------------------------------------------------------------------------
 # Initialize experiment:
 # ------------------------------------------------------------------------------
