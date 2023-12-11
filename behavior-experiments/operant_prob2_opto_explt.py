@@ -130,7 +130,7 @@ rule = core.ProbSwitchRule([highfreq, lowfreq], left_port, p_index, criterion,
 
 if ttl_experiment == 'y':
     # Set up ttl class instances opto stim TTL output 10 Hz
-    TTL_opto = core.ttl(TTL_opto_PIN, 0.005, 0.095, 1)
+    TTL_opto = core.ttl(TTL_opto_PIN, 0.005, 0.095, 1.00)
 # ------------------------------------------------------------------------------
 # Initialize experiment:
 # ------------------------------------------------------------------------------
@@ -161,7 +161,7 @@ for trial in trials:
     thread_L = threading.Thread(target=lick_port_L.Lick, args=(1000, 8))
     thread_R = threading.Thread(target=lick_port_R.Lick, args=(1000, 8))
     left_trial_ = np.random.rand() < 0.5  # 50% chance of L trial
-    # Initialize thread objects for pulsing continuous opto stimulation
+    # Initialize thread objects for opto stimulation during 1 sec delay btwn choice and  R/omission
     if ttl_experiment == 'y':
         thread_ttl = threading.Thread(target=TTL_opto.pulsedata)
     # Start lick recording threads
