@@ -129,7 +129,7 @@ rule = core.ProbSwitchRule([highfreq, lowfreq], left_port, p_index, criterion,
                            countdown_start, expert, countdown)
 
 if ttl_experiment == 'y':
-    # Set up ttl class instances opto stim TTL output 5 kHz
+    # Set up ttl class instances opto stim TTL output 10 Hz
     TTL_opto = core.ttl(TTL_opto_PIN, 0.005, 0.095)
 # ------------------------------------------------------------------------------
 # Initialize experiment:
@@ -173,9 +173,7 @@ for trial in trials:
     if left_trial_:
         tone = rule.L_tone
         data.sample_tone[trial] = 'L'
-        data.t_sample_tone[trial] = time.time() * 1000 - data._t_start_abs[trial]
-        if ttl_experiment == 'y' and TTL_opto.pulsing:
-            TTL_opto.pulsing = False
+        data.t_sample_tone[trial] = time.time() * 1000 - data._t_start_abs[trial]s
         tone.play()
         data.sample_tone_end[trial] = (time.time() * 1000
                                        - data._t_start_abs[trial])
