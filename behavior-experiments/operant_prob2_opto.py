@@ -129,7 +129,7 @@ rule = core.ProbSwitchRule([highfreq, lowfreq], left_port, p_index, criterion,
                            countdown_start, expert, countdown)
 
 if ttl_experiment == 'y':
-    # Set up ttl class instances opto stim TTL output 5 kHz
+    # Set up ttl class instances opto stim TTL output 10 Hz
     TTL_opto = core.ttl(TTL_opto_PIN, 0.005, 0.095)
 # ------------------------------------------------------------------------------
 # Initialize experiment:
@@ -208,15 +208,9 @@ for trial in trials:
                 break
 
             # If first lick is R (incorrect)
-            elif sum(lick_port_L._licks[(length_L - 1):]) > 0:
-
-                # Stochastic reward omission
+            elif sum(lick_port_R._licks[(length_R - 1):]) > 0:
+                # Reward omission for incorrect lick
                 if np.random.rand() < rule.p_rew:
-                    time.slep(1)
-                    if ttl_experiment == 'y':
-                        data.opto_start[trial] = time.time() * 1000 - data._t_start_abs[trial]
-                        thread_ttl.start()
-                        data.opto_end[trial] = time.time() * 1000 - data._t_start_abs[trial]
                     tone_wrong.play()
 
                 # Reward delivery for incorrect lick
@@ -278,7 +272,6 @@ for trial in trials:
 
             # If first lick is L (incorrect)
             elif sum(lick_port_L._licks[(length_L - 1):]) > 0:
-
                 # Stochastic reward omission
                 if np.random.rand() < rule.p_rew:
                     time.slep(1)
