@@ -662,8 +662,6 @@ class ttl():
         self.pin = pin
         self.opto_stim_length = opto_stim_length
         self.ISI_length = ISI_length
-        self.total_length = 0
-        self.pulsing = False
         # Setup GPIO pins for TTL pulses.
         GPIO.setup(self.pin, GPIO.OUT)
         GPIO.output(self.pin, False)
@@ -679,19 +677,6 @@ class ttl():
             GPIO.output(self.pin, False)
             time.sleep(self.ISI_length)
 
-    def pulsing_continuous(self):
-        '''
-        Pulse continuously, until an external
-        trigger is received.
-        '''
-
-        self.pulsing = True
-
-        while self.pulsing:
-            GPIO.output(self.pin, True)
-            time.sleep(self.opto_stim_length)
-            GPIO.output(self.pin, False)
-            time.sleep(self.ISI_length)
 
 
 
