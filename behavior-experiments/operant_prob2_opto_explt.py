@@ -212,7 +212,7 @@ for trial in trials:
 
                 # Stochastic reward omission
                 if np.random.rand() < rule.p_rew:
-                    time.slep(1)
+                    time.sleep(1)
                     if ttl_experiment == 'y':
                         data.opto_start[trial] = time.time() * 1000 - data._t_start_abs[trial]
                         thread_ttl.start()
@@ -281,7 +281,7 @@ for trial in trials:
 
                 # Stochastic reward omission
                 if np.random.rand() < rule.p_rew:
-                    time.slep(1)
+                    time.sleep(1)
                     if ttl_experiment == 'y':
                         data.opto_start[trial] = time.time() * 1000 - data._t_start_abs[trial]
                         thread_ttl.start()
