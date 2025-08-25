@@ -13,6 +13,7 @@ import h5py
 from pygame import mixer
 import boxsdk
 from boxsdk import Client
+from box_config import BOX_ACCESS_TOKEN
 from datetime import datetime
 
 
@@ -459,8 +460,7 @@ class data():
         
         try:
             # Replace this token every hour from Box Developer Console
-            ACCESS_TOKEN = "FgLQcHA9z5Md8em9oMSN16dfgbI9aslZ"
-            
+            ACCESS_TOKEN = BOX_ACCESS_TOKEN
             # Use the correct authentication method
             auth = boxsdk.OAuth2(
                 client_id='hpqcaj9sk34n3ubp38jeekmuk194cqwr',
@@ -471,7 +471,6 @@ class data():
             client = boxsdk.Client(auth)
             
             print(f"Uploading {self.filename} to Box...")
-            
             root_folder = client.folder('0')
             uploaded_file = root_folder.upload(self.filename)
             
