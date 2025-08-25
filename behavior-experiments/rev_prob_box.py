@@ -348,14 +348,7 @@ for trial in trials:
     if sum(lick_port_R._licks) != 0:
         licks_detected += 'R'
         
-print('Tone:{}, Resp:{}, Licks:{}, Rew:{}, Corr:{}, Perf:{}/{}'.format(
-    tone.freq, 
-    response, 
-    licks_detected,
-    np.nansum([data.v_rew_l[trial], data.v_rew_r[trial]]),
-    rule.correct_trials[-1], 
-    performance, 
-    (trial+1)))
+print('Tone:{}, Resp:{}, Licks:{}, Rew:{}, Corr:{}, Perf:{}/{}'.format(tone.freq, response, licks_detected, np.nansum([data.v_rew_l[trial], data.v_rew_r[trial]]), rule.correct_trials[-1], performance, (trial+1)))
         
 
     #---------------------------------------------------------------------------
