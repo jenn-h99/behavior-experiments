@@ -15,7 +15,7 @@ from datetime import datetime
 import json
 import os
 from boxsdk import OAuth2, Client
-
+TOKEN_FILE = '/home/pi/box_tokens.json'  # Change as needed
 # ------------------------------------------------------------------------------
 # Define some classes
 # ------------------------------------------------------------------------------
@@ -452,8 +452,6 @@ class data():
                                    'left_port(1) -> highfreq on left port; '
                                    'if pulse rule, left_port(1) -> multipulse'
                                    'on left port.')
-
-    TOKEN_FILE = '/home/pi/box_tokens.json'  # Change as needed
     
     def load_tokens():
         with open(TOKEN_FILE, 'r') as f:
