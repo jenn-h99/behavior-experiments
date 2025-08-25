@@ -12,9 +12,10 @@ import os
 import h5py
 from pygame import mixer
 import boxsdk
-from boxsdk import OAuth2, Client
-import json
+from boxsdk import Client, DeveloperTokenAuth
 from datetime import datetime
+
+
 # ------------------------------------------------------------------------------
 # Define some classes
 # ------------------------------------------------------------------------------
@@ -450,39 +451,29 @@ class data():
                                    'freq_rule(0) -> pulse rule. If freq rule, '
                                    'left_port(1) -> highfreq on left port; '
                                    'if pulse rule, left_port(1) -> multipulse'
-                                   'on left port.')
-
-from boxsdk import OAuth2, Client
+                                   'on left port.'
 
 def Box_sync(self):
-    """Upload data file to Box lab folder with auto-refresh"""
+    """Upload data file to Box lab folder using developer token"""
     try:
-        # Your Box app credentials (get from Box Developer Console)
-        CLIENT_ID = "hpqcaj9sk34n3ubp38jeekmuk194cqwr"
-        CLIENT_SECRET = "HB0lyehwMfXOkxQTwGFtB9MlUairjqLD"
+        # Replace this token every hour from Box Developer Console
+        ACCESS_TOKEN = "FgLQcHA9z5Md8em9oMSN16dfgbI9aslZ"
         
-        # These will be saved/loaded from a file
-        access_token = self.load_box_token()  # Load saved token
+        auth = DeveloperTokenAuth(ACCESS_TOKEN)
+        client = Client(auth)
         
-        oauth = OAuth2(
-            CLIENT_ID, 
-            CLIENT_SECRET,
-            access_token=access_token
-        )
+        print(f"Uploading {self.filename} to Box...")
         
-        client = Client(oauth)
-        
-        # Upload file
+        # Upload to root folder
         root_folder = client.folder('0')
         uploaded_file = root_folder.upload(self.filename)
-        
-        # Save refreshed token for next time
-        self.save_box_token(oauth.access_token)
         
         print(f"✓ Data successfully synced to Box: {uploaded_file.name}")
         
     except Exception as e:
         print(f"✗ Box sync failed: {e}")
+        print("Check if token has expired (1 hour limit)")
+        print("Generate new token at: https://developer.box.com")
         
 class Stepper():
     def __init__(self, n_trials, enablePIN, directionPIN, stepPIN, emptyPIN, side):
