@@ -11,7 +11,9 @@ import numpy as np
 import os
 import h5py
 from pygame import mixer
-import rclone
+from boxsdk import OAuth2, Client
+import json
+from datetime import datetime
 # ------------------------------------------------------------------------------
 # Define some classes
 # ------------------------------------------------------------------------------
@@ -448,38 +450,74 @@ class data():
                                    'left_port(1) -> highfreq on left port; '
                                    'if pulse rule, left_port(1) -> multipulse'
                                    'on left port.')
-    import dropbox
-from datetime import datetime
 
-# Add this method to your existing data class in core.py:
-def Dropbox_sync(self):
-    """Upload data file to Dropbox lab folder"""
+def Box_sync(self):
+    """Upload data file to Box lab folder"""
     try:
-        # Your Dropbox access token - replace with your actual token
-        access_token = "YOUR_DROPBOX_ACCESS_TOKEN_HERE"
-        dbx = dropbox.Dropbox(access_token)
+        # Box API credentials - replace with your actual values
+        CLIENT_ID = "your_box_client_id"
+        CLIENT_SECRET = "your_box_client_secret"
+        ACCESS_TOKEN = "your_box_access_token"
         
-        # Create organized folder structure: /lab_data/mouse_XXX/protocol_name/
-        remote_folder = f"/lab_data/mouse_{self.mouse_number}/{self.protocol_name}/"
-        remote_file_path = remote_folder + self.filename
+        # Initialize Box client
+        auth = OAuth2(CLIENT_ID, CLIENT_SECRET, access_token=ACCESS_TOKEN)
+        client = Client(auth)
         
-        print(f"Uploading {self.filename} to Dropbox...")
+        print(f"Uploading {self.filename} to Box...")
         
-        # Upload the HDF5 file
-        with open(self.filename, 'rb') as f:
-            dbx.files_upload(f.read(), remote_file_path, autorename=True)
+        # Get root folder (or specify a different folder ID)
+        root_folder = client.folder('0')  # '0' is the root folder
         
-        print(f"✓ Data successfully synced to Dropbox: {remote_file_path}")
+        # Create organized folder structure
+        try:
+            # Try to find lab_data folder
+            lab_folder = None
+            for item in root_folder.get_items():
+                if item.name == 'lab_data' and item.type == 'folder':
+                    lab_folder = item
+                    break
+            
+            # Create lab_data folder if it doesn't exist
+            if lab_folder is None:
+                lab_folder = root_folder.create_subfolder('lab_data')
+            
+            # Try to find mouse folder
+            mouse_folder = None
+            mouse_folder_name = f"mouse_{self.mouse_number}"
+            for item in lab_folder.get_items():
+                if item.name == mouse_folder_name and item.type == 'folder':
+                    mouse_folder = item
+                    break
+            
+            # Create mouse folder if it doesn't exist
+            if mouse_folder is None:
+                mouse_folder = lab_folder.create_subfolder(mouse_folder_name)
+            
+            # Try to find protocol folder
+            protocol_folder = None
+            for item in mouse_folder.get_items():
+                if item.name == self.protocol_name and item.type == 'folder':
+                    protocol_folder = item
+                    break
+            
+            # Create protocol folder if it doesn't exist
+            if protocol_folder is None:
+                protocol_folder = mouse_folder.create_subfolder(self.protocol_name)
+            
+            # Upload file to the organized folder
+            uploaded_file = protocol_folder.upload(self.filename)
+            
+        except Exception as folder_error:
+            # If folder creation fails, just upload to root
+            print(f"Folder organization failed, uploading to root: {folder_error}")
+            uploaded_file = root_folder.upload(self.filename)
         
-    except dropbox.exceptions.AuthError:
-        print("✗ Dropbox authentication failed - check your access token")
-        print("Data saved locally but not uploaded to cloud")
-    except FileNotFoundError:
-        print(f"✗ Could not find file {self.filename}")
-        print("Data may not have been saved properly")
+        print(f"✓ Data successfully synced to Box: {uploaded_file.name}")
+        
     except Exception as e:
-        print(f"✗ Dropbox sync failed: {e}")
+        print(f"✗ Box sync failed: {e}")
         print("Data saved locally but not uploaded to cloud")
+        print("Check your Box API credentials and internet connection")
 
 class Stepper():
     def __init__(self, n_trials, enablePIN, directionPIN, stepPIN, emptyPIN, side):
