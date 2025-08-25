@@ -15,7 +15,7 @@ from datetime import datetime
 import json
 import os
 from boxsdk import OAuth2, Client
-TOKEN_FILE = '/home/pi/box_tokens.json'  # Change as needed
+
 # ------------------------------------------------------------------------------
 # Define some classes
 # ------------------------------------------------------------------------------
@@ -165,7 +165,7 @@ class PureTone2(Tone):
         self.data['tone_offset'] = np.empty(self.n_trials, dtype=float)*np.nan
  
 class data():
-
+    TOKEN_FILE = '/home/pi/box_tokens.json'  # Change as needed
     def __init__(self, protocol_name, protocol_description, n_trials,
                  mouse_number, block_number, experimenter, mouse_weight,
                  countdown=np.nan):
@@ -453,7 +453,6 @@ class data():
                                    'if pulse rule, left_port(1) -> multipulse'
                                    'on left port.')
 
-    TOKEN_FILE = '/home/pi/box_tokens.json'  # Change if needed
     
     def Box_sync(self):
         """Upload data file to Box lab folder using saved tokens and refresh automatically."""
@@ -501,8 +500,6 @@ class data():
         print("Tokens refreshed and saved.")
 
     
-
-        
 class Stepper():
     def __init__(self, n_trials, enablePIN, directionPIN, stepPIN, emptyPIN, side):
         self.n_trials = n_trials
