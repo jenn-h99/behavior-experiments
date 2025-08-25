@@ -451,74 +451,38 @@ class data():
                                    'if pulse rule, left_port(1) -> multipulse'
                                    'on left port.')
 
+from boxsdk import OAuth2, Client
+
 def Box_sync(self):
-    """Upload data file to Box lab folder"""
+    """Upload data file to Box lab folder with auto-refresh"""
     try:
-        # Box API credentials - replace with your actual values
+        # Your Box app credentials (get from Box Developer Console)
         CLIENT_ID = "hpqcaj9sk34n3ubp38jeekmuk194cqwr"
         CLIENT_SECRET = "HB0lyehwMfXOkxQTwGFtB9MlUairjqLD"
-        ACCESS_TOKEN = "FgLQcHA9z5Md8em9oMSN16dfgbI9aslZ"
         
-        # Initialize Box client
-        auth = OAuth2(CLIENT_ID, CLIENT_SECRET, access_token=ACCESS_TOKEN)
-        client = Client(auth)
+        # These will be saved/loaded from a file
+        access_token = self.load_box_token()  # Load saved token
         
-        print(f"Uploading {self.filename} to Box...")
+        oauth = OAuth2(
+            CLIENT_ID, 
+            CLIENT_SECRET,
+            access_token=access_token
+        )
         
-        # Get root folder (or specify a different folder ID)
-        root_folder = client.folder('0')  # '0' is the root folder
+        client = Client(oauth)
         
-        # Create organized folder structure
-        try:
-            # Try to find lab_data folder
-            lab_folder = None
-            for item in root_folder.get_items():
-                if item.name == 'lab_data' and item.type == 'folder':
-                    lab_folder = item
-                    break
-            
-            # Create lab_data folder if it doesn't exist
-            if lab_folder is None:
-                lab_folder = root_folder.create_subfolder('lab_data')
-            
-            # Try to find mouse folder
-            mouse_folder = None
-            mouse_folder_name = f"mouse_{self.mouse_number}"
-            for item in lab_folder.get_items():
-                if item.name == mouse_folder_name and item.type == 'folder':
-                    mouse_folder = item
-                    break
-            
-            # Create mouse folder if it doesn't exist
-            if mouse_folder is None:
-                mouse_folder = lab_folder.create_subfolder(mouse_folder_name)
-            
-            # Try to find protocol folder
-            protocol_folder = None
-            for item in mouse_folder.get_items():
-                if item.name == self.protocol_name and item.type == 'folder':
-                    protocol_folder = item
-                    break
-            
-            # Create protocol folder if it doesn't exist
-            if protocol_folder is None:
-                protocol_folder = mouse_folder.create_subfolder(self.protocol_name)
-            
-            # Upload file to the organized folder
-            uploaded_file = protocol_folder.upload(self.filename)
-            
-        except Exception as folder_error:
-            # If folder creation fails, just upload to root
-            print(f"Folder organization failed, uploading to root: {folder_error}")
-            uploaded_file = root_folder.upload(self.filename)
+        # Upload file
+        root_folder = client.folder('0')
+        uploaded_file = root_folder.upload(self.filename)
+        
+        # Save refreshed token for next time
+        self.save_box_token(oauth.access_token)
         
         print(f"✓ Data successfully synced to Box: {uploaded_file.name}")
         
     except Exception as e:
         print(f"✗ Box sync failed: {e}")
-        print("Data saved locally but not uploaded to cloud")
-        print("Check your Box API credentials and internet connection")
-
+        
 class Stepper():
     def __init__(self, n_trials, enablePIN, directionPIN, stepPIN, emptyPIN, side):
         self.n_trials = n_trials
