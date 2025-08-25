@@ -453,27 +453,27 @@ class data():
                                    'if pulse rule, left_port(1) -> multipulse'
                                    'on left port.'
 
-def Box_sync(self):
-    """Upload data file to Box lab folder using developer token"""
-    try:
-        # Replace this token every hour from Box Developer Console
-        ACCESS_TOKEN = "FgLQcHA9z5Md8em9oMSN16dfgbI9aslZ"
-        
-        auth = DeveloperTokenAuth(ACCESS_TOKEN)
-        client = Client(auth)
-        
-        print(f"Uploading {self.filename} to Box...")
-        
-        # Upload to root folder
-        root_folder = client.folder('0')
-        uploaded_file = root_folder.upload(self.filename)
-        
-        print(f"✓ Data successfully synced to Box: {uploaded_file.name}")
-        
-    except Exception as e:
-        print(f"✗ Box sync failed: {e}")
-        print("Check if token has expired (1 hour limit)")
-        print("Generate new token at: https://developer.box.com")
+    def Box_sync(self):
+        """Upload data file to Box lab folder using developer token"""
+        try:
+            # Replace this token every hour from Box Developer Console
+            ACCESS_TOKEN = "FgLQcHA9z5Md8em9oMSN16dfgbI9aslZ"
+            
+            auth = DeveloperTokenAuth(ACCESS_TOKEN)
+            client = Client(auth)
+            
+            print(f"Uploading {self.filename} to Box...")
+            
+            # Upload to root folder
+            root_folder = client.folder('0')
+            uploaded_file = root_folder.upload(self.filename)
+            
+            print(f"✓ Data successfully synced to Box: {uploaded_file.name}")
+            
+        except Exception as e:
+            print(f"✗ Box sync failed: {e}")
+            print("Check if token has expired (1 hour limit)")
+            print("Generate new token at: https://developer.box.com")
         
 class Stepper():
     def __init__(self, n_trials, enablePIN, directionPIN, stepPIN, emptyPIN, side):
