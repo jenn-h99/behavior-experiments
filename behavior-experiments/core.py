@@ -341,6 +341,42 @@ class data():
         self.exp_msg = ''
         self.total_reward = 0
 
+    def store_tokens(self, access_token, refresh_token):
+        tokens = {
+            'access_token': access_token,
+            'refresh_token': refresh_token
+        }
+        with open(self.TOKEN_FILE, 'w') as f:
+            json.dump(tokens, f, indent=4)
+        print("✅ Tokens refreshed and saved.")
+
+    def Box_sync(self):
+        try:
+            if not os.path.exists(self.TOKEN_FILE):
+                raise FileNotFoundError(f"Token file not found: {self.TOKEN_FILE}")
+
+            with open(self.TOKEN_FILE, 'r') as f:
+                tokens = json.load(f)
+
+            auth = OAuth2(
+                client_id='hpqcaj9sk34n3ubp38jeekmuk194cqwr',
+                client_secret='HB0lyehwMfXOkxQTwGFtB9MlUairjqLD',
+                access_token=tokens.get('access_token'),
+                refresh_token=tokens.get('refresh_token'),
+                store_tokens=self.store_tokens  # <== here, pass method bound to self
+            )
+
+            client = Client(auth)
+
+            print(f"📤 Uploading {self.filename} to Box...")
+            root_folder = client.folder('0')
+            uploaded_file = root_folder.upload(self.filename)
+            print(f"✅ Uploaded: {uploaded_file.name}")
+
+        except Exception as e:
+            print(f"❌ Box sync failed: {e}")
+
+
     def Store(self):
         '''
         Stores all relevant experimental data and parameters in an HDF5 file.
@@ -453,54 +489,6 @@ class data():
                                    'if pulse rule, left_port(1) -> multipulse'
                                    'on left port.')
     
-    def load_tokens():
-        with open(TOKEN_FILE, 'r') as f:
-             return json.load(f)
-
-    def store_tokens(access_token, refresh_token):
-        tokens = {
-            'access_token': access_token,
-            'refresh_token': refresh_token
-        }
-        with open(TOKEN_FILE, 'w') as f:
-            json.dump(tokens, f, indent=4)
-        print("✅ Tokens refreshed and saved.")
-    
-    def Box_sync(self):
-        """Upload data file to Box root folder with token refresh support."""
-        try:
-            # Load existing tokens
-            if not os.path.exists(TOKEN_FILE):
-                raise FileNotFoundError(f"Token file not found: {TOKEN_FILE}")
-    
-            with open(TOKEN_FILE, 'r') as f:
-                tokens = json.load(f)
-    
-            access_token = tokens.get('access_token')
-            refresh_token = tokens.get('refresh_token')
-    
-            # Create OAuth2 and client objects
-            auth = OAuth2(
-                client_id='hpqcaj9sk34n3ubp38jeekmuk194cqwr',
-                client_secret='HB0lyehwMfXOkxQTwGFtB9MlUairjqLD',
-                access_token=access_token,
-                refresh_token=refresh_token,
-                store_tokens=store_tokens
-            )
-    
-            client = Client(auth)  # ← THIS is where it goes
-    
-            # Upload file
-            print(f"📤 Uploading {self.filename} to Box...")
-            root_folder = client.folder('0')  # '0' = root
-            uploaded_file = root_folder.upload(self.filename)
-            print(f"✅ Uploaded to Box: {uploaded_file.name}")
-    
-        except Exception as e:
-            print(f"❌ Box sync failed: {e}")
-
-
-
     
 class Stepper():
     def __init__(self, n_trials, enablePIN, directionPIN, stepPIN, emptyPIN, side):
