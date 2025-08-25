@@ -457,7 +457,7 @@ class data():
     
     def load_tokens():
     with open(TOKEN_FILE, 'r') as f:
-        return json.load(f)
+         return json.load(f)
 
     def store_tokens(access_token, refresh_token):
         tokens = {
