@@ -357,15 +357,15 @@ print('Tone:{}, Resp:{}, Licks:{}, Rew:{}, Corr:{}, Perf:{}/{}'.format(tone.freq
 
     # If 8 unrewarded trials in a row, deliver rewards through both ports.
     if len(rule.correct_trials) > 8 and sum(rule.correct_trials[-8:]) == 0:
-        rule.L_tone.play()
-        water_L.Reward()
-        supp_reward_L += reward_size
-        time.sleep(1)
-        rule.R_tone.play()
-        water_R.Reward()
-        supp_reward_R += reward_size
-        time.sleep(1)
-        rule.correct_trials = []
+      rule.L_tone.play()
+      water_L.Reward()
+      supp_reward_L += reward_size
+      time.sleep(1)
+      rule.R_tone.play()
+      water_R.Reward()
+      supp_reward_R += reward_size
+      time.sleep(1)
+      rule.correct_trials = []
 
     # If 5 rewards from L port in a row, deliver rewards through R port.
     if correct_side[-5:] == ['L', 'L', 'L', 'L', 'L']:
