@@ -455,9 +455,9 @@ def Box_sync(self):
     """Upload data file to Box lab folder"""
     try:
         # Box API credentials - replace with your actual values
-        CLIENT_ID = "your_box_client_id"
-        CLIENT_SECRET = "your_box_client_secret"
-        ACCESS_TOKEN = "your_box_access_token"
+        CLIENT_ID = "hpqcaj9sk34n3ubp38jeekmuk194cqwr"
+        CLIENT_SECRET = "HB0lyehwMfXOkxQTwGFtB9MlUairjqLD"
+        ACCESS_TOKEN = "FgLQcHA9z5Md8em9oMSN16dfgbI9aslZ"
         
         # Initialize Box client
         auth = OAuth2(CLIENT_ID, CLIENT_SECRET, access_token=ACCESS_TOKEN)
