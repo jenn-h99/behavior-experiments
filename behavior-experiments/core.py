@@ -448,35 +448,38 @@ class data():
                                    'left_port(1) -> highfreq on left port; '
                                    'if pulse rule, left_port(1) -> multipulse'
                                    'on left port.')
+    import dropbox
+from datetime import datetime
 
-    def Rclone(self):
-        '''
-        Use rclone to create a directory in the data repository for the current
-        experiment, then copy the data file to that directory. A copy is also
-        kept locally in a temporary data directory.
-        '''
-        # Open rclone configuration
-        # Find yesterday's data for this mouse
-        yesterday_data = [fname for fname in
-                          os.listdir('/home/pi/Desktop/yesterday_data')
-                          if self.mouse_number in fname]
-
-        for fname in yesterday_data:  # Move files to temp data folder
-            os.system(f'mv /home/pi/Desktop/yesterday_data/{fname} '
-                      '/home/pi/Desktop/temporary-data')
-
-        # Move current file to yesterday_data folder
-        os.system(f'mv /home/pi/Desktop/behavior-experiments/'
-                  f'behavior-experiments/{self.filename} '
-                  f'/home/pi/Desktop/yesterday_data')
-        # Create remote folder for today's data and copy file into that folder
-        os.system(f'rclone mkdir data1:"Behaviour data/Jennifer/'
-                  f'all mice/{self.mouse_number}"')
-        os.system(f'rclone mkdir data1:"Behaviour data/Jennifer/'
-                  f'all mice/{self.mouse_number}/{self.date_experiment}"')
-        os.system(f'rclone copy /home/pi/Desktop/yesterday_data/{self.filename}'
-                  f' data1:"Behaviour data/Jennifer/all mice/'
-                  f'{self.mouse_number}/{self.date_experiment}"')
+# Add this method to your existing data class in core.py:
+def Dropbox_sync(self):
+    """Upload data file to Dropbox lab folder"""
+    try:
+        # Your Dropbox access token - replace with your actual token
+        access_token = "YOUR_DROPBOX_ACCESS_TOKEN_HERE"
+        dbx = dropbox.Dropbox(access_token)
+        
+        # Create organized folder structure: /lab_data/mouse_XXX/protocol_name/
+        remote_folder = f"/lab_data/mouse_{self.mouse_number}/{self.protocol_name}/"
+        remote_file_path = remote_folder + self.filename
+        
+        print(f"Uploading {self.filename} to Dropbox...")
+        
+        # Upload the HDF5 file
+        with open(self.filename, 'rb') as f:
+            dbx.files_upload(f.read(), remote_file_path, autorename=True)
+        
+        print(f"✓ Data successfully synced to Dropbox: {remote_file_path}")
+        
+    except dropbox.exceptions.AuthError:
+        print("✗ Dropbox authentication failed - check your access token")
+        print("Data saved locally but not uploaded to cloud")
+    except FileNotFoundError:
+        print(f"✗ Could not find file {self.filename}")
+        print("Data may not have been saved properly")
+    except Exception as e:
+        print(f"✗ Dropbox sync failed: {e}")
+        print("Data saved locally but not uploaded to cloud")
 
 class Stepper():
     def __init__(self, n_trials, enablePIN, directionPIN, stepPIN, emptyPIN, side):
