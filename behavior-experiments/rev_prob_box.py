@@ -349,13 +349,13 @@ for trial in trials:
         licks_detected += 'R'
         
   print('Tone:{}, Resp:{}, Licks:{}, Rew:{}, Corr:{}, Perf:{}/{}'.format(
-        tone.freq, 
-        response, 
-        licks_detected,
-        np.nansum([data.v_rew_l[trial], data.v_rew_r[trial]]),
-        rule.correct_trials[-1], 
-        performance, 
-        (trial+1)))
+      tone.freq, 
+      response, 
+      licks_detected,
+      np.nansum([data.v_rew_l[trial], data.v_rew_r[trial]]),
+      rule.correct_trials[-1], 
+      performance, 
+      (trial+1)))
         
 
     #---------------------------------------------------------------------------
