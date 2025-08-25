@@ -451,7 +451,7 @@ class data():
                                    'freq_rule(0) -> pulse rule. If freq rule, '
                                    'left_port(1) -> highfreq on left port; '
                                    'if pulse rule, left_port(1) -> multipulse'
-                                   'on left port.'
+                                   'on left port.')
 
     def Box_sync(self):
         """Upload data file to Box lab folder using developer token"""
