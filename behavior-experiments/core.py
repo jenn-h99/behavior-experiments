@@ -454,7 +454,8 @@ class data():
                                    'on left port.')
 
     def Box_sync(self):
-    """Upload data file to Box lab folder using developer token"""
+        
+        """Upload data file to Box lab folder using developer token"""
         
         try:
             # Replace this token every hour from Box Developer Console
