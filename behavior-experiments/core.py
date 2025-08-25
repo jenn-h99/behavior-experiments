@@ -12,7 +12,7 @@ import os
 import h5py
 from pygame import mixer
 import boxsdk
-from boxsdk import Client, DeveloperTokenAuth
+from boxsdk import Client
 from datetime import datetime
 
 
@@ -458,8 +458,8 @@ class data():
         try:
             # Replace this token every hour from Box Developer Console
             ACCESS_TOKEN = "FgLQcHA9z5Md8em9oMSN16dfgbI9aslZ"
-            
-            auth = DeveloperTokenAuth(ACCESS_TOKEN)
+        
+            auth = boxsdk.DeveloperTokenAuth(ACCESS_TOKEN)
             client = Client(auth)
             
             print(f"Uploading {self.filename} to Box...")
