@@ -165,7 +165,7 @@ class PureTone2(Tone):
         self.data['tone_offset'] = np.empty(self.n_trials, dtype=float)*np.nan
  
 class data():
-    
+    TOKEN_FILE = '/home/pi/box_tokens.json'  # Change as needed
     def __init__(self, protocol_name, protocol_description, n_trials,
                  mouse_number, block_number, experimenter, mouse_weight,
                  countdown=np.nan):
@@ -340,7 +340,11 @@ class data():
         self.exp_quality = ''
         self.exp_msg = ''
         self.total_reward = 0
-
+    
+    def load_tokens(self):
+        with open(self.TOKEN_FILE, 'r') as f:
+            return json.load(f)
+    
     def store_tokens(self, access_token, refresh_token):
         tokens = {
             'access_token': access_token,
