@@ -11,6 +11,7 @@ import numpy as np
 import os
 import h5py
 from pygame import mixer
+import boxsdk
 from boxsdk import OAuth2, Client
 import json
 from datetime import datetime
