@@ -16,6 +16,7 @@ protocol_description = ('In this protocol, one of 2 sample cues (differing based
                         'trial countdown to a rule switch is started.')
 
 import time
+import boxsdk
 import RPi.GPIO as GPIO
 import numpy as np
 import os
