@@ -6,20 +6,24 @@ def get_tokens(auth_code):
     data = {
         'grant_type': 'authorization_code',
         'code': auth_code,
-        'client_id': 'hpqcaj9sk34n3ubp38jeekmuk194cqwr',   # Your Box app client_id
-        'client_secret': 'HB0lyehwMfXOkxQTwGFtB9MlUairjqLD', # Your Box app client_secret
-        'redirect_uri': 'https://example.com',                # The same redirect URI you used
+        'client_id': 'hpqcaj9sk34n3ubp38jeekmuk194cqwr',
+        'client_secret': 'HB0lyehwMfXOkxQTwGFtB9MlUairjqLD',
+        'redirect_uri': 'https://example.com',
     }
 
     response = requests.post(url, data=data)
-    tokens = response.json()
-
-    # Save tokens to a file for later use
-    with open('/home/pi/box_tokens.json', 'w') as f:
-        json.dump(tokens, f, indent=4)
-    print("Tokens saved to /home/pi/box_tokens.json")
-    print(tokens)
+    
+    if response.status_code == 200:
+        tokens = response.json()
+        with open('/home/pi/box_tokens.json', 'w') as f:
+            json.dump(tokens, f, indent=4)
+        print("Tokens saved to /home/pi/box_tokens.json")
+        print(tokens)
+    else:
+        print("Failed to get tokens")
+        print(f"Status Code: {response.status_code}")
+        print(f"Response: {response.text}")
 
 if __name__ == "__main__":
-    auth_code = 'uPPYxIiZmuqvcbZseSG3F3ZYA0NPPifV'  # your authorization code here
+    auth_code = 'uPPYxIiZmuqvcbZseSG3F3ZYA0NPPifV'  # replace with your actual code
     get_tokens(auth_code)
