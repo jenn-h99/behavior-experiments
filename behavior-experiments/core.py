@@ -455,29 +455,30 @@ class data():
 
     def Box_sync(self):
     """Upload data file to Box lab folder using developer token"""
-    try:
-        # Replace this token every hour from Box Developer Console
-        ACCESS_TOKEN = "FgLQcHA9z5Md8em9oMSN16dfgbI9aslZ"
         
-        # Use the correct authentication method
-        auth = boxsdk.OAuth2(
-            client_id='hpqcaj9sk34n3ubp38jeekmuk194cqwr',
-            client_secret='HB0lyehwMfXOkxQTwGFtB9MlUairjqLD',
-            access_token=ACCESS_TOKEN
-        )
-        
-        client = boxsdk.Client(auth)
-        
-        print(f"Uploading {self.filename} to Box...")
-        
-        root_folder = client.folder('0')
-        uploaded_file = root_folder.upload(self.filename)
-        
-        print(f"✓ Data successfully synced to Box: {uploaded_file.name}")
-        
-    except Exception as e:
-        print(f"✗ Box sync failed: {e}")
-        print("Check if token has expired (1 hour limit)")
+        try:
+            # Replace this token every hour from Box Developer Console
+            ACCESS_TOKEN = "FgLQcHA9z5Md8em9oMSN16dfgbI9aslZ"
+            
+            # Use the correct authentication method
+            auth = boxsdk.OAuth2(
+                client_id='hpqcaj9sk34n3ubp38jeekmuk194cqwr',
+                client_secret='HB0lyehwMfXOkxQTwGFtB9MlUairjqLD',
+                access_token=ACCESS_TOKEN
+            )
+            
+            client = boxsdk.Client(auth)
+            
+            print(f"Uploading {self.filename} to Box...")
+            
+            root_folder = client.folder('0')
+            uploaded_file = root_folder.upload(self.filename)
+            
+            print(f"✓ Data successfully synced to Box: {uploaded_file.name}")
+            
+        except Exception as e:
+            print(f"✗ Box sync failed: {e}")
+            print("Check if token has expired (1 hour limit)")
         
 class Stepper():
     def __init__(self, n_trials, enablePIN, directionPIN, stepPIN, emptyPIN, side):
