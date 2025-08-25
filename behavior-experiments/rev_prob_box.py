@@ -348,8 +348,11 @@ for trial in trials:
     if sum(lick_port_R._licks) != 0:
         licks_detected += 'R'
         
-print('Tone:{}, Resp:{}, Licks:{}, Rew:{}, Corr:{}, Perf:{}/{}'.format(tone.freq, response, licks_detected, np.nansum([data.v_rew_l[trial], data.v_rew_r[trial]]), rule.correct_trials[-1], performance, (trial+1)))
-        
+    # Fixed print statement - moved inside trial loop with proper indentation
+    print('Tone:{}, Resp:{}, Licks:{}, Rew:{}, Corr:{}, Perf:{}/{}'.format(
+        tone.freq, response, licks_detected, 
+        np.nansum([data.v_rew_l[trial], data.v_rew_r[trial]]), 
+        rule.correct_trials[-1], performance, (trial+1)))
 
     #---------------------------------------------------------------------------
     # Deliver supplementary rewards:
@@ -357,18 +360,18 @@ print('Tone:{}, Resp:{}, Licks:{}, Rew:{}, Corr:{}, Perf:{}/{}'.format(tone.freq
 
     # If 8 unrewarded trials in a row, deliver rewards through both ports.
     if len(rule.correct_trials) > 8 and sum(rule.correct_trials[-8:]) == 0:
-      rule.L_tone.play()
-      water_L.Reward()
-      supp_reward_L += reward_size
-      time.sleep(1)
-      rule.R_tone.play()
-      water_R.Reward()
-      supp_reward_R += reward_size
-      time.sleep(1)
-      rule.correct_trials = []
+        rule.L_tone.play()
+        water_L.Reward()
+        supp_reward_L += reward_size
+        time.sleep(1)
+        rule.R_tone.play()
+        water_R.Reward()
+        supp_reward_R += reward_size
+        time.sleep(1)
+        rule.correct_trials = []
 
     # If 5 rewards from L port in a row, deliver rewards through R port.
-    if correct_side[-5:] == ['L', 'L', 'L', 'L', 'L']:
+    if len(correct_side) >= 5 and correct_side[-5:] == ['L', 'L', 'L', 'L', 'L']:
         for i in range(2):
             if np.random.rand() < 0.5:        
                 rule.R_tone.play()
@@ -381,7 +384,7 @@ print('Tone:{}, Resp:{}, Licks:{}, Rew:{}, Corr:{}, Perf:{}/{}'.format(tone.freq
         correct_side.append('R')
 
     # If 5 rewards from R port in a row, deliver rewards through L port
-    elif correct_side[-5:] == ['R', 'R', 'R', 'R', 'R']:
+    elif len(correct_side) >= 5 and correct_side[-5:] == ['R', 'R', 'R', 'R', 'R']:
         for i in range(2):
             if np.random.rand() < 0.5:        
                 rule.L_tone.play()
@@ -404,11 +407,12 @@ print('Tone:{}, Resp:{}, Licks:{}, Rew:{}, Corr:{}, Perf:{}/{}'.format(tone.freq
 tone_end.play()
 camera.stop_preview()
 
-print(f'Total L reward: {total_reward_L} uL + {supp_reward_L}')
-print(f'Total R reward: {total_reward_R} uL + {supp_reward_R}')
+# Fixed print statements - use .format() for Python compatibility
+print('Total L reward: {} uL + {}'.format(total_reward_L, supp_reward_L))
+print('Total R reward: {} uL + {}'.format(total_reward_R, supp_reward_R))
 data.total_reward = (total_reward_L + supp_reward_L
                      + total_reward_R + supp_reward_R)
-print(f'Total reward: {data.total_reward}uL')
+print('Total reward: {}uL'.format(data.total_reward))
 
 # Ask the user if there were any problems with the experiment. If so, prompt
 # the user for an explanation that will be stored in the data file.
