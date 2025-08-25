@@ -456,8 +456,8 @@ class data():
     TOKEN_FILE = '/home/pi/box_tokens.json'  # Change as needed
     
     def load_tokens():
-    with open(TOKEN_FILE, 'r') as f:
-         return json.load(f)
+        with open(TOKEN_FILE, 'r') as f:
+             return json.load(f)
 
     def store_tokens(access_token, refresh_token):
         tokens = {
