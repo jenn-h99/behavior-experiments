@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 """
 Created on Tue Aug 12 11:47:22 2021
-@author: jenniferhsieh
+@author: jennifer
 """
-protocol_name = 'rev_prob_box'
+protocol_name = 'rev_prob_box.py'
 protocol_description = ('In this protocol, one of 2 sample cues (differing based'
                         'on frequency) is immediately followed by a response '
                         'period. During this period, the first lickport that '
@@ -416,9 +416,9 @@ data.exp_quality = input('Should this data be used? (y/n): ')
 if data.exp_quality == 'n':
     data.exp_msg = input('What went wrong?: ')
 
-# Store the data in an HDF5 file and upload this file to Dropbox.
+# Store the data in an HDF5 file and upload this file to Box.
 data.Store()
-data.Dropbox_sync()  # Changed from data.Rclone() to data.Dropbox_sync()
+data.Box_sync()  # Changed from data.Rclone() to data.Box_sync()
 
 #delete the .wav files created for the experiment
 core.delete_tones()
