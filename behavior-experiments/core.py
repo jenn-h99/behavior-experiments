@@ -8,15 +8,14 @@ Created on Mon Jun 24 15:48:29 2019
 import time
 import RPi.GPIO as GPIO
 import numpy as np
-import os
 import h5py
 from pygame import mixer
 import boxsdk
-from boxsdk import Client
-from box_config import BOX_ACCESS_TOKEN
 from datetime import datetime
-
-
+import json
+import os
+from boxsdk import OAuth2, Client
+TOKEN_FILE = '/home/pi/box_tokens.json'  # Change as needed
 # ------------------------------------------------------------------------------
 # Define some classes
 # ------------------------------------------------------------------------------
@@ -454,31 +453,47 @@ class data():
                                    'if pulse rule, left_port(1) -> multipulse'
                                    'on left port.')
 
+    
+    def store_tokens_callback(access_token, refresh_token):
+        tokens = {
+            'access_token': access_token,
+            'refresh_token': refresh_token
+        }
+        with open(TOKEN_FILE, 'w') as f:
+            json.dump(tokens, f)
+        print("Tokens updated!")
+    
+    def load_tokens():
+        if os.path.exists(TOKEN_FILE):
+            with open(TOKEN_FILE, 'r') as f:
+                return json.load(f)
+        else:
+            raise FileNotFoundError(f"Token file {TOKEN_FILE} not found. Please authenticate first.")
+    
     def Box_sync(self):
-        
-        """Upload data file to Box lab folder using developer token"""
-        
         try:
-            # Replace this token every hour from Box Developer Console
-            ACCESS_TOKEN = BOX_ACCESS_TOKEN
-            # Use the correct authentication method
-            auth = boxsdk.OAuth2(
-                client_id='hpqcaj9sk34n3ubp38jeekmuk194cqwr',
-                client_secret='HB0lyehwMfXOkxQTwGFtB9MlUairjqLD',
-                access_token=ACCESS_TOKEN
+            tokens = load_tokens()
+    
+            auth = OAuth2(
+                client_id='YOUR_CLIENT_ID',
+                client_secret='YOUR_CLIENT_SECRET',
+                access_token=tokens['access_token'],
+                refresh_token=tokens['refresh_token'],
+                store_tokens=store_tokens_callback
             )
-            
-            client = boxsdk.Client(auth)
-            
+    
+            client = Client(auth)
+    
             print(f"Uploading {self.filename} to Box...")
             root_folder = client.folder('0')
             uploaded_file = root_folder.upload(self.filename)
-            
+    
             print(f"✓ Data successfully synced to Box: {uploaded_file.name}")
-            
+    
         except Exception as e:
             print(f"✗ Box sync failed: {e}")
-            print("Check if token has expired (1 hour limit)")
+    
+
         
 class Stepper():
     def __init__(self, n_trials, enablePIN, directionPIN, stepPIN, emptyPIN, side):
