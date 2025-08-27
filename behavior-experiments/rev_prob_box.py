@@ -19,12 +19,12 @@ import time
 import boxsdk
 import RPi.GPIO as GPIO
 import numpy as np
-import os
 import threading
 import core
-from picamera import PiCamera
+import os
 os.environ['SDL_VIDEODRIVER'] = 'dummy'
 os.environ['SDL_AUDIODRIVER'] = 'alsa'
+from picamera import PiCamera
 from pygame import mixer
 
 camera = core.CameraManager()
