@@ -25,6 +25,8 @@ import core
 from picamera import PiCamera
 from pygame import mixer
 
+camera = core.CameraManager()
+
 #------------------------------------------------------------------------------
 # Set experimental parameters:
 #------------------------------------------------------------------------------
@@ -401,7 +403,7 @@ for trial in trials:
     time.sleep(ITI_)
 
 tone_end.play()
-camera.stop_preview()
+camera.close_camera()
 
 # Fixed print statements - use .format() for Python compatibility
 print('Total L reward: {} uL + {}'.format(total_reward_L, supp_reward_L))
