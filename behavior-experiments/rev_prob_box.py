@@ -24,6 +24,7 @@ import threading
 import core
 from picamera import PiCamera
 os.environ['SDL_VIDEODRIVER'] = 'dummy'
+os.environ['SDL_AUDIODRIVER'] = 'alsa'
 from pygame import mixer
 
 camera = core.CameraManager()
