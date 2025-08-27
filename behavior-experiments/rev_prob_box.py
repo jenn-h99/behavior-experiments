@@ -25,10 +25,6 @@ import core
 from picamera import PiCamera
 from pygame import mixer
 
-
-camera = PiCamera() #create camera object
-camera.start_preview(fullscreen = False, window = (0,-44,350,400))
-
 #------------------------------------------------------------------------------
 # Set experimental parameters:
 #------------------------------------------------------------------------------
