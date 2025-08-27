@@ -1031,3 +1031,94 @@ def delete_tones():
     tones = [i for i in os.listdir('.') if '.wav' in i]
     for tone in tones:
         os.remove(tone)
+
+
+class CameraManager:
+    def __init__(self, enable_preview=True, preview_window=(0, -44, 350, 400)):
+        self.camera = None
+        self.preview_active = False
+        self.camera_available = False
+        self.enable_preview = enable_preview
+        self.preview_window = preview_window
+        
+        self.initialize_camera()
+    
+    def initialize_camera(self):
+        """Initialize camera with error handling for different Pi models"""
+        try:
+            from picamera import PiCamera
+            self.camera = PiCamera()
+            self.camera_available = True
+            print("Camera initialized successfully")
+            
+            if self.enable_preview:
+                self.start_preview()
+                
+        except ImportError:
+            print("Warning: picamera module not available")
+            self.camera_available = False
+        except Exception as e:
+            print("Camera initialization failed: {}".format(str(e)))
+            print("Continuing without camera...")
+            self.camera_available = False
+    
+    def start_preview(self):
+        """Start camera preview with error handling"""
+        if not self.camera_available:
+            return False
+            
+        try:
+            self.camera.start_preview(
+                fullscreen=False, 
+                window=self.preview_window
+            )
+            self.preview_active = True
+            print("Camera preview started")
+            return True
+        except Exception as e:
+            print("Failed to start camera preview: {}".format(str(e)))
+            return False
+    
+    def stop_preview(self):
+        """Stop camera preview with error handling"""
+        if not self.camera_available or not self.preview_active:
+            return
+            
+        try:
+            self.camera.stop_preview()
+            self.preview_active = False
+            print("Camera preview stopped")
+        except Exception as e:
+            print("Warning: Could not stop camera preview: {}".format(str(e)))
+    
+    def close_camera(self):
+        """Properly close camera resources"""
+        if not self.camera_available:
+            return
+            
+        try:
+            if self.preview_active:
+                self.stop_preview()
+            
+            self.camera.close()
+            print("Camera closed successfully")
+        except Exception as e:
+            print("Warning: Error closing camera: {}".format(str(e)))
+    
+    def is_available(self):
+        """Check if camera is available and working"""
+        return self.camera_available
+    
+    def capture_image(self, filename):
+        """Capture image if camera is available"""
+        if not self.camera_available:
+            print("Cannot capture - camera not available")
+            return False
+            
+        try:
+            self.camera.capture(filename)
+            print("Image captured: {}".format(filename))
+            return True
+        except Exception as e:
+            print("Image capture failed: {}".format(str(e)))
+            return False
