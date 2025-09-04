@@ -40,18 +40,18 @@ class Tone:
         self.sound: object
             A pygame.mixer object corresponding to the tone.
         '''
-    def generate_tone(self):
+        def generate_tone(self):
         '''
         Use the sox library to generate a wav file corresponding to this tone.
         '''
         raise NotImplementedError
-
-    def play(self):
+        
+        def play(self):
         '''Play the sound over the speakers.'''
         self.sound.play()
         time.sleep(self.tone_length)
-
-    def delete(self):
+        
+        def delete(self):
         ''' Delete the file from the local directory.'''
         os.system(f'rm {self.name}')
 
