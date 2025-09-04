@@ -357,6 +357,7 @@ class data():
         with open(self.TOKEN_FILE, 'w') as f:
             json.dump(tokens, f, indent=4)
         print("✅ Tokens refreshed and saved.")
+ 
     def Box_sync(self, box_folder_path=None):
     """
     Sync data file to a specific Box folder path, creating a mouse-specific subfolder
@@ -400,86 +401,84 @@ class data():
     except Exception as e:
         print(f"❌ Box sync failed: {e}")
 
-def _get_or_create_mouse_folder(self, client, base_folder_path, mouse_number):
-    """
-    Navigate to base folder and create/find mouse-specific subfolder
-    
-    Parameters:
-    -----------
-    client: boxsdk.Client
-        Authenticated Box client
-    base_folder_path: str
-        Path to the base folder (e.g., 'JCBeiqueLab/BeiqueLabData1/Behaviour Data/Jennifer/Fall2025')
-    mouse_number: str
-        Mouse number for creating subfolder
-    
-    Returns:
-    --------
-    boxsdk.Folder
-        The mouse-specific folder object
-    """
-    # First navigate to the base folder
-    base_folder = self._navigate_to_box_folder(client, base_folder_path)
-    
-    # Look for existing mouse folder
-    mouse_folder_name = # Look for existing mouse folder
-mouse_folder_name = str(mouse_number)
-    found_mouse_folder = None
-    
-    for item in base_folder.get_items():
-        if item.type == 'folder' and item.name == mouse_folder_name:
-            found_mouse_folder = item
-            break
-    
-    if found_mouse_folder:
-        print(f"Found existing mouse folder: {mouse_folder_name}")
-        return found_mouse_folder
-    else:
-        # Create the mouse folder if it doesn't exist
-        print(f"Creating mouse folder: {mouse_folder_name}")
-        return base_folder.create_subfolder(mouse_folder_name)
-
-def _navigate_to_box_folder(self, client, folder_path):
-    """
-    Navigate to an existing folder path in Box
-    
-    Parameters:
-    -----------
-    client: boxsdk.Client
-        Authenticated Box client
-    folder_path: str
-        Path to the desired folder (e.g., 'JCBeiqueLab/BeiqueLabData1/Behaviour Data/Jennifer/Fall2025')
-    
-    Returns:
-    --------
-    boxsdk.Folder
-        The target folder object
-    """
-    # Start from root folder
-    current_folder = client.folder('0')
-    
-    # Split path and navigate through existing folders
-    path_parts = folder_path.split('/')
-    
-    for part in path_parts:
-        if not part:  # Skip empty parts
-            continue
-            
-        # Look for existing subfolder
-        found_folder = None
-        for item in current_folder.get_items():
-            if item.type == 'folder' and item.name == part:
-                found_folder = item
+    def _get_or_create_mouse_folder(self, client, base_folder_path, mouse_number):
+        """
+        Navigate to base folder and create/find mouse-specific subfolder
+        
+        Parameters:
+        -----------
+        client: boxsdk.Client
+            Authenticated Box client
+        base_folder_path: str
+            Path to the base folder (e.g., 'JCBeiqueLab/BeiqueLabData1/Behaviour Data/Jennifer/Fall2025')
+        mouse_number: str
+            Mouse number for creating subfolder
+        
+        Returns:
+        --------
+        boxsdk.Folder
+            The mouse-specific folder object
+        """
+        # First navigate to the base folder
+        base_folder = self._navigate_to_box_folder(client, base_folder_path)
+        
+        # Look for existing mouse folder
+        mouse_folder_name = str(mouse_number)
+        found_mouse_folder = None
+        
+        for item in base_folder.get_items():
+            if item.type == 'folder' and item.name == mouse_folder_name:
+                found_mouse_folder = item
                 break
         
-        if found_folder:
-            current_folder = found_folder
+        if found_mouse_folder:
+            print(f"Found existing mouse folder: {mouse_folder_name}")
+            return found_mouse_folder
         else:
-            raise FileNotFoundError(f"Box folder not found: {part} in path {folder_path}")
-    
-    return current_folder
+            # Create the mouse folder if it doesn't exist
+            print(f"Creating mouse folder: {mouse_folder_name}")
+            return base_folder.create_subfolder(mouse_folder_name)
 
-
+    def _navigate_to_box_folder(self, client, folder_path):
+        """
+        Navigate to an existing folder path in Box
+        
+        Parameters:
+        -----------
+        client: boxsdk.Client
+            Authenticated Box client
+        folder_path: str
+            Path to the desired folder (e.g., 'JCBeiqueLab/BeiqueLabData1/Behaviour Data/Jennifer/Fall2025')
+        
+        Returns:
+        --------
+        boxsdk.Folder
+            The target folder object
+        """
+        # Start from root folder
+        current_folder = client.folder('0')
+        
+        # Split path and navigate through existing folders
+        path_parts = folder_path.split('/')
+        
+        for part in path_parts:
+            if not part:  # Skip empty parts
+                continue
+                
+            # Look for existing subfolder
+            found_folder = None
+            for item in current_folder.get_items():
+                if item.type == 'folder' and item.name == part:
+                    found_folder = item
+                    break
+            
+            if found_folder:
+                current_folder = found_folder
+            else:
+                raise FileNotFoundError(f"Box folder not found: {part} in path {folder_path}")
+        
+        return current_folder
+        
     def Store(self):
         '''
         Stores all relevant experimental data and parameters in an HDF5 file.
@@ -594,19 +593,14 @@ def _navigate_to_box_folder(self, client, folder_path):
     
     
 class Stepper():
-    def __init__(self, n_trials, enablePIN, directionPIN, stepPIN, emptyPIN, side):
-        self.n_trials = n_trials
-        self.enablePIN = enablePIN
-        self.directionPIN = directionPIN
-        self.stepPIN = stepPIN
-        self.emptyPIN = emptyPIN
-        self.cont = False
-        self.side = side
-
-        GPIO.setup(self.enablePIN, GPIO.OUT, initial=1)
-        GPIO.setup(self.directionPIN, GPIO.OUT, initial=0)
-        GPIO.setup(self.stepPIN, GPIO.OUT, initial=0)
-        GPIO.setup(self.emptyPIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+    def __init__(self, pin, opto_stim_length, ISI_length, total_length):
+        self.pin = pin
+        self.opto_stim_length = opto_stim_length
+        self.ISI_length = ISI_length
+        self.total_length = total_length
+        # Setup GPIO pins for TTL pulses.
+        GPIO.setup(self.pin, GPIO.OUT)
+        GPIO.output(self.pin, False)
 
     def generate_data(self):
         '''
