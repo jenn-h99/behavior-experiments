@@ -18,7 +18,7 @@ from boxsdk import OAuth2, Client
 TOKEN_FILE = '/home/pi/box_tokens.json'  # Change as needed
 
 # Box configuration
-DEFAULT_BOX_FOLDER_PATH = '/Users/jenniferhsieh/JCBeiqueLab/BeiqueLabData1 - Documents/Behaviour Data/Jennifer/Fall2025'
+DEFAULT_BOX_FOLDER_PATH = 'JCBeiqueLab/BeiqueLabData1 - Documents/Behaviour Data/Jennifer/Fall2025'
 
 # ------------------------------------------------------------------------------
 # Define some classes
@@ -382,15 +382,15 @@ class data():
                 client_secret='HB0lyehwMfXOkxQTwGFtB9MlUairjqLD',
                 access_token=tokens.get('access_token'),
                 refresh_token=tokens.get('refresh_token'),
-                store_tokens=self.store_tokens  # <== here, pass method bound to self
+                store_tokens=self.store_tokens
             )
 
             client = Client(auth)
 
             print(f"📤 Uploading {self.filename} to Box folder: {box_folder_path}")
             
-            # Navigate to or create the specific folder path
-            folder = self._get_or_create_box_folder(client, box_folder_path)
+            # Navigate to the specific folder path
+            folder = self._navigate_to_box_folder(client, box_folder_path)
             
             # Upload file to the specific folder
             uploaded_file = folder.upload(self.filename)
@@ -399,16 +399,16 @@ class data():
         except Exception as e:
             print(f"❌ Box sync failed: {e}")
 
-    def _get_or_create_box_folder(self, client, folder_path):
+    def _navigate_to_box_folder(self, client, folder_path):
         """
-        Navigate to or create a specific folder path in Box
+        Navigate to an existing folder path in Box
         
         Parameters:
         -----------
         client: boxsdk.Client
             Authenticated Box client
         folder_path: str
-            Full path to the desired folder
+            Path to the desired folder (e.g., 'JCBeiqueLab/BeiqueLabData1 - Documents/Behaviour Data/Jennifer/Fall2025')
         
         Returns:
         --------
@@ -418,8 +418,8 @@ class data():
         # Start from root folder
         current_folder = client.folder('0')
         
-        # Remove leading slash and split path
-        path_parts = folder_path.strip('/').split('/')
+        # Split path and navigate through existing folders
+        path_parts = folder_path.split('/')
         
         for part in path_parts:
             if not part:  # Skip empty parts
@@ -435,9 +435,7 @@ class data():
             if found_folder:
                 current_folder = found_folder
             else:
-                # Create the folder if it doesn't exist
-                print(f"Creating Box folder: {part}")
-                current_folder = current_folder.create_subfolder(part)
+                raise FileNotFoundError(f"Box folder not found: {part} in path {folder_path}")
         
         return current_folder
 
@@ -740,8 +738,15 @@ class ttl():
         self.opto_stim_length = opto_stim_length
         self.ISI_length = ISI_length
         self.total_length = total_length
-        # Setup GPIOpins for TTL pulses.
-        GPIO.setup(self.pin, GPIO.OUT)
+        # Setup GPIO pins for TTL pulses.GPIO.setup(self.pin, GPIO.OUT)
+        GPIO.output(self.pin, False)
+
+    def pulse(self):
+        '''
+        Send a single TTL pulse.
+        '''
+        GPIO.output(self.pin, True)
+        time.sleep(0.01)  # 10ms pulse
         GPIO.output(self.pin, False)
 
     def pulsedata(self):
@@ -890,34 +895,14 @@ class Rule():
     different value and start a trial countdown. Once that countdown reaches
     0, p_rew will change again and a new p_rew.
     '''
-    def __init__(self, n_trials, tones: list, actions: list, mapping: int,
-                 criterion: list, countdown_start: int, p_rew: float,
-                 expert: bool = False, countdown: int = np.nan):
-        '''
-        '''
-        self.n_trials = n_trials
-        self.tones = tones
-        self.actions = ['L', 'R', 'N']
-        self.rule = mapping
-        self.criterion = criterion
-        self.countdown = countdown
-        self.countdown_start = countdown_start
-        self.expert = expert
-        self.p_rew = p_rew
-        # Initialize tone-action mapping to the initial rule.
-        self.map_tones()
-        print(f'initial countdown = {self.countdown}')
-
     def __init__(self, tones: list, initial_rule: int,
-                 criterion: list, countdown_start: int, expert: bool = False,
-                 countdown: int = np.nan):
+                 criterion: list, countdown_start: int, countdown: int = np.nan):
         self.tones = tones
         self.actions = ['L', 'R', 'N']
         self.rule = initial_rule
         self.criterion = criterion
         self.countdown = countdown
         self.countdown_start = countdown_start
-        self.expert = expert
         self.correct_trials = []
         # Initialize tone-action mapping to the initial rule.
         self.map_tones()
@@ -964,7 +949,6 @@ class Rule():
             if self.check_criterion():
                 # Warn user that criterion was met, and begin trial countdown.
                 print('-----Performance criterion has been met.-----')
-                print('ya')
                 print(f'A rule reversal will occur in '
                       f'{self.countdown_start} trials.')
                 self.countdown = self.countdown_start
@@ -1181,3 +1165,4 @@ class CameraManager:
         except Exception as e:
             print("Image capture failed: {}".format(str(e)))
             return False
+            
