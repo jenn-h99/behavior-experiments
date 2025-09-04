@@ -408,7 +408,7 @@ class data():
         client: boxsdk.Client
             Authenticated Box client
         folder_path: str
-            Path to the desired folder (e.g., 'JCBeiqueLab/BeiqueLabData1 - Documents/Behaviour Data/Jennifer/Fall2025')
+            Path to the desired folder (e.g., 'JCBeiqueLab/BeiqueLabData1/Behaviour Data/Jennifer/Fall2025')
         
         Returns:
         --------
