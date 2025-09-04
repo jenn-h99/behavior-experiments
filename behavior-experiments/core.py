@@ -26,32 +26,32 @@ DEFAULT_BOX_FOLDER_PATH = 'JCBeiqueLab/BeiqueLabData1/Behaviour Data/Jennifer/Fa
 
 
 class Tone:
-        '''
-        A parent class to handle auditory tones to be used during the task.
-    
-        Attributes:
-        -----------
-        self.name: str
-            The filename of the corresponding wav file (e.g. '1000Hz.wav').
-    
-        self.tone_length: float
-            The total duration (in seconds) of the tone.
-    
-        self.sound: object
-            A pygame.mixer object corresponding to the tone.
-        '''
-        def generate_tone(self):
+    '''
+    A parent class to handle auditory tones to be used during the task.
+
+    Attributes:
+    -----------
+    self.name: str
+        The filename of the corresponding wav file (e.g. '1000Hz.wav').
+
+    self.tone_length: float
+        The total duration (in seconds) of the tone.
+
+    self.sound: object
+        A pygame.mixer object corresponding to the tone.
+    '''
+    def generate_tone(self):
         '''
         Use the sox library to generate a wav file corresponding to this tone.
         '''
         raise NotImplementedError
         
-        def play(self):
+    def play(self):
         '''Play the sound over the speakers.'''
         self.sound.play()
         time.sleep(self.tone_length)
         
-        def delete(self):
+    def delete(self):
         ''' Delete the file from the local directory.'''
         os.system(f'rm {self.name}')
 
@@ -359,47 +359,47 @@ class data():
         print("✅ Tokens refreshed and saved.")
  
     def Box_sync(self, box_folder_path=None):
-    """
-    Sync data file to a specific Box folder path, creating a mouse-specific subfolder
-    
-    Parameters:
-    -----------
-    box_folder_path: str, optional
-        Specific Box folder path to sync to. If None, uses default path.
-    """
-    if box_folder_path is None:
-        box_folder_path = DEFAULT_BOX_FOLDER_PATH
-    
-    try:
-        if not os.path.exists(self.TOKEN_FILE):
-            raise FileNotFoundError(f"Token file not found: {self.TOKEN_FILE}")
-
-        with open(self.TOKEN_FILE, 'r') as f:
-            tokens = json.load(f)
-
-        auth = OAuth2(
-            client_id='hpqcaj9sk34n3ubp38jeekmuk194cqwr',
-            client_secret='HB0lyehwMfXOkxQTwGFtB9MlUairjqLD',
-            access_token=tokens.get('access_token'),
-            refresh_token=tokens.get('refresh_token'),
-            store_tokens=self.store_tokens
-        )
-
-        client = Client(auth)
-
-        # Create mouse-specific folder path
-        mouse_folder_path = f"{box_folder_path}/{self.mouse_number}"
-        print(f"📤 Uploading {self.filename} to Box folder: {mouse_folder_path}")
+        """
+        Sync data file to a specific Box folder path, creating a mouse-specific subfolder
         
-        # Navigate to the specific folder path and create mouse folder if needed
-        folder = self._get_or_create_mouse_folder(client, box_folder_path, self.mouse_number)
+        Parameters:
+        -----------
+        box_folder_path: str, optional
+            Specific Box folder path to sync to. If None, uses default path.
+        """
+        if box_folder_path is None:
+            box_folder_path = DEFAULT_BOX_FOLDER_PATH
         
-        # Upload file to the mouse-specific folder
-        uploaded_file = folder.upload(self.filename)
-        print(f"✅ Uploaded: {uploaded_file.name}")
+        try:
+            if not os.path.exists(self.TOKEN_FILE):
+                raise FileNotFoundError(f"Token file not found: {self.TOKEN_FILE}")
 
-    except Exception as e:
-        print(f"❌ Box sync failed: {e}")
+            with open(self.TOKEN_FILE, 'r') as f:
+                tokens = json.load(f)
+
+            auth = OAuth2(
+                client_id='hpqcaj9sk34n3ubp38jeekmuk194cqwr',
+                client_secret='HB0lyehwMfXOkxQTwGFtB9MlUairjqLD',
+                access_token=tokens.get('access_token'),
+                refresh_token=tokens.get('refresh_token'),
+                store_tokens=self.store_tokens
+            )
+
+            client = Client(auth)
+
+            # Create mouse-specific folder path
+            mouse_folder_path = f"{box_folder_path}/{self.mouse_number}"
+            print(f"📤 Uploading {self.filename} to Box folder: {mouse_folder_path}")
+            
+            # Navigate to the specific folder path and create mouse folder if needed
+            folder = self._get_or_create_mouse_folder(client, box_folder_path, self.mouse_number)
+            
+            # Upload file to the mouse-specific folder
+            uploaded_file = folder.upload(self.filename)
+            print(f"✅ Uploaded: {uploaded_file.name}")
+
+        except Exception as e:
+            print(f"❌ Box sync failed: {e}")
 
     def _get_or_create_mouse_folder(self, client, base_folder_path, mouse_number):
         """
@@ -592,27 +592,6 @@ class data():
                                    'on left port.')
     
     
-class Stepper():
-    def __init__(self, pin, opto_stim_length, ISI_length, total_length):
-        self.pin = pin
-        self.opto_stim_length = opto_stim_length
-        self.ISI_length = ISI_length
-        self.total_length = total_length
-        # Setup GPIO pins for TTL pulses.
-        GPIO.setup(self.pin, GPIO.OUT)
-        GPIO.output(self.pin, False)
-
-    def generate_data(self):
-        '''
-        '''
-        self.data = {}
-        self.data['name'] = f'{self.side}_rewards'
-        self.data['side'] = self.side
-        self.data['volume'] = np.empty(self.n_trials, dtype=float)*np.nan
-        self.data['steps'] = np.empty(self.n_trials, dtype=float)*np.nan
-        self.data['']
-
-        
 class stepper():
 
     def __init__(self, enablePIN, directionPIN, stepPIN, emptyPIN):
@@ -764,15 +743,13 @@ class ttl():
         The length(sec) of TTL pulses.
 
     self.ISI_length: float
-        The length(sec) of inter-stimulus-interval.
+The length(sec) of inter-stimulus-interval.
 
     '''
-    def __init__(self, pin, opto_stim_length, ISI_length, total_length):
+    def __init__(self, pin):
         self.pin = pin
-        self.opto_stim_length = opto_stim_length
-        self.ISI_length = ISI_length
-        self.total_length = total_length
-        # Setup GPIO pins for TTL pulses.GPIO.setup(self.pin, GPIO.OUT)
+        # Setup GPIO pins for TTL pulses.
+        GPIO.setup(self.pin, GPIO.OUT)
         GPIO.output(self.pin, False)
 
     def pulse(self):
@@ -1199,4 +1176,3 @@ class CameraManager:
         except Exception as e:
             print("Image capture failed: {}".format(str(e)))
             return False
-            
