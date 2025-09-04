@@ -426,8 +426,8 @@ if data.exp_quality == 'n':
 # Store the data in an HDF5 file and upload this file to Box.
 data.Store()
 
-# Sync to the specific Box folder path
-print('Syncing data to Box folder: {}'.format(box_folder_path))
+# Sync to the mouse-specific Box folder
+print('Syncing data to Box folder: {}/mouse_{}'.format(box_folder_path, mouse_number))
 data.Box_sync(box_folder_path=box_folder_path)
 
 #delete the .wav files created for the experiment
