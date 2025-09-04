@@ -387,7 +387,7 @@ class data():
         client = Client(auth)
 
         # Create mouse-specific folder path
-        mouse_folder_path = f"{box_folder_path}/mouse_{self.mouse_number}"
+        mouse_folder_path = f"{box_folder_path}/{self.mouse_number}"
         print(f"📤 Uploading {self.filename} to Box folder: {mouse_folder_path}")
         
         # Navigate to the specific folder path and create mouse folder if needed
@@ -422,7 +422,8 @@ def _get_or_create_mouse_folder(self, client, base_folder_path, mouse_number):
     base_folder = self._navigate_to_box_folder(client, base_folder_path)
     
     # Look for existing mouse folder
-    mouse_folder_name = f"mouse_{mouse_number}"
+    mouse_folder_name = # Look for existing mouse folder
+mouse_folder_name = str(mouse_number)
     found_mouse_folder = None
     
     for item in base_folder.get_items():
