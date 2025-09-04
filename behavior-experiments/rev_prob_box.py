@@ -427,7 +427,7 @@ if data.exp_quality == 'n':
 data.Store()
 
 # Sync to the mouse-specific Box folder
-print('Syncing data to Box folder: {}/mouse_{}'.format(box_folder_path, mouse_number))
+print('Syncing data to Box folder: {}/{}'.format(box_folder_path, mouse_number))
 data.Box_sync(box_folder_path=box_folder_path)
 
 #delete the .wav files created for the experiment
