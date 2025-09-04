@@ -357,87 +357,126 @@ class data():
         with open(self.TOKEN_FILE, 'w') as f:
             json.dump(tokens, f, indent=4)
         print("✅ Tokens refreshed and saved.")
-
     def Box_sync(self, box_folder_path=None):
-        """
-        Sync data file to a specific Box folder path
+    """
+    Sync data file to a specific Box folder path, creating a mouse-specific subfolder
+    
+    Parameters:
+    -----------
+    box_folder_path: str, optional
+        Specific Box folder path to sync to. If None, uses default path.
+    """
+    if box_folder_path is None:
+        box_folder_path = DEFAULT_BOX_FOLDER_PATH
+    
+    try:
+        if not os.path.exists(self.TOKEN_FILE):
+            raise FileNotFoundError(f"Token file not found: {self.TOKEN_FILE}")
+
+        with open(self.TOKEN_FILE, 'r') as f:
+            tokens = json.load(f)
+
+        auth = OAuth2(
+            client_id='hpqcaj9sk34n3ubp38jeekmuk194cqwr',
+            client_secret='HB0lyehwMfXOkxQTwGFtB9MlUairjqLD',
+            access_token=tokens.get('access_token'),
+            refresh_token=tokens.get('refresh_token'),
+            store_tokens=self.store_tokens
+        )
+
+        client = Client(auth)
+
+        # Create mouse-specific folder path
+        mouse_folder_path = f"{box_folder_path}/mouse_{self.mouse_number}"
+        print(f"📤 Uploading {self.filename} to Box folder: {mouse_folder_path}")
         
-        Parameters:
-        -----------
-        box_folder_path: str, optional
-            Specific Box folder path to sync to. If None, uses default path.
-        """
-        if box_folder_path is None:
-            box_folder_path = DEFAULT_BOX_FOLDER_PATH
+        # Navigate to the specific folder path and create mouse folder if needed
+        folder = self._get_or_create_mouse_folder(client, box_folder_path, self.mouse_number)
         
-        try:
-            if not os.path.exists(self.TOKEN_FILE):
-                raise FileNotFoundError(f"Token file not found: {self.TOKEN_FILE}")
+        # Upload file to the mouse-specific folder
+        uploaded_file = folder.upload(self.filename)
+        print(f"✅ Uploaded: {uploaded_file.name}")
 
-            with open(self.TOKEN_FILE, 'r') as f:
-                tokens = json.load(f)
+    except Exception as e:
+        print(f"❌ Box sync failed: {e}")
 
-            auth = OAuth2(
-                client_id='hpqcaj9sk34n3ubp38jeekmuk194cqwr',
-                client_secret='HB0lyehwMfXOkxQTwGFtB9MlUairjqLD',
-                access_token=tokens.get('access_token'),
-                refresh_token=tokens.get('refresh_token'),
-                store_tokens=self.store_tokens
-            )
+def _get_or_create_mouse_folder(self, client, base_folder_path, mouse_number):
+    """
+    Navigate to base folder and create/find mouse-specific subfolder
+    
+    Parameters:
+    -----------
+    client: boxsdk.Client
+        Authenticated Box client
+    base_folder_path: str
+        Path to the base folder (e.g., 'JCBeiqueLab/BeiqueLabData1/Behaviour Data/Jennifer/Fall2025')
+    mouse_number: str
+        Mouse number for creating subfolder
+    
+    Returns:
+    --------
+    boxsdk.Folder
+        The mouse-specific folder object
+    """
+    # First navigate to the base folder
+    base_folder = self._navigate_to_box_folder(client, base_folder_path)
+    
+    # Look for existing mouse folder
+    mouse_folder_name = f"mouse_{mouse_number}"
+    found_mouse_folder = None
+    
+    for item in base_folder.get_items():
+        if item.type == 'folder' and item.name == mouse_folder_name:
+            found_mouse_folder = item
+            break
+    
+    if found_mouse_folder:
+        print(f"Found existing mouse folder: {mouse_folder_name}")
+        return found_mouse_folder
+    else:
+        # Create the mouse folder if it doesn't exist
+        print(f"Creating mouse folder: {mouse_folder_name}")
+        return base_folder.create_subfolder(mouse_folder_name)
 
-            client = Client(auth)
-
-            print(f"📤 Uploading {self.filename} to Box folder: {box_folder_path}")
+def _navigate_to_box_folder(self, client, folder_path):
+    """
+    Navigate to an existing folder path in Box
+    
+    Parameters:
+    -----------
+    client: boxsdk.Client
+        Authenticated Box client
+    folder_path: str
+        Path to the desired folder (e.g., 'JCBeiqueLab/BeiqueLabData1/Behaviour Data/Jennifer/Fall2025')
+    
+    Returns:
+    --------
+    boxsdk.Folder
+        The target folder object
+    """
+    # Start from root folder
+    current_folder = client.folder('0')
+    
+    # Split path and navigate through existing folders
+    path_parts = folder_path.split('/')
+    
+    for part in path_parts:
+        if not part:  # Skip empty parts
+            continue
             
-            # Navigate to the specific folder path
-            folder = self._navigate_to_box_folder(client, box_folder_path)
-            
-            # Upload file to the specific folder
-            uploaded_file = folder.upload(self.filename)
-            print(f"✅ Uploaded: {uploaded_file.name}")
-
-        except Exception as e:
-            print(f"❌ Box sync failed: {e}")
-
-    def _navigate_to_box_folder(self, client, folder_path):
-        """
-        Navigate to an existing folder path in Box
+        # Look for existing subfolder
+        found_folder = None
+        for item in current_folder.get_items():
+            if item.type == 'folder' and item.name == part:
+                found_folder = item
+                break
         
-        Parameters:
-        -----------
-        client: boxsdk.Client
-            Authenticated Box client
-        folder_path: str
-            Path to the desired folder (e.g., 'JCBeiqueLab/BeiqueLabData1/Behaviour Data/Jennifer/Fall2025')
-        
-        Returns:
-        --------
-        boxsdk.Folder
-            The target folder object
-        """
-        # Start from root folder
-        current_folder = client.folder('0')
-        
-        # Split path and navigate through existing folders
-        path_parts = folder_path.split('/')
-        
-        for part in path_parts:
-            if not part:  # Skip empty parts
-                continue
-                
-            # Look for existing subfolder
-            found_folder = None
-            for item in current_folder.get_items():
-                if item.type == 'folder' and item.name == part:
-                    found_folder = item
-                    break
-            
-            if found_folder:
-                current_folder = found_folder
-            else:
-                raise FileNotFoundError(f"Box folder not found: {part} in path {folder_path}")
-        
-        return current_folder
+        if found_folder:
+            current_folder = found_folder
+        else:
+            raise FileNotFoundError(f"Box folder not found: {part} in path {folder_path}")
+    
+    return current_folder
 
 
     def Store(self):
