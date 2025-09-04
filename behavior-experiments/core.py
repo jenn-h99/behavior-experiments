@@ -18,7 +18,7 @@ from boxsdk import OAuth2, Client
 TOKEN_FILE = '/home/pi/box_tokens.json'  # Change as needed
 
 # Box configuration
-DEFAULT_BOX_FOLDER_PATH = 'JCBeiqueLab/BeiqueLabData1 - Documents/Behaviour Data/Jennifer/Fall2025'
+DEFAULT_BOX_FOLDER_PATH = 'JCBeiqueLab/BeiqueLabData1/Behaviour Data/Jennifer/Fall2025'
 
 # ------------------------------------------------------------------------------
 # Define some classes
