@@ -39,7 +39,7 @@ mouse_weight = float(input('mouse weight(g): '))
 
 # Box sync configuration
 dataset_repo = './datasets/'
-box_folder_path = '/Users/jenniferhsieh/JCBeiqueLab/BeiqueLabData1 - Documents/Behaviour Data/Jennifer/Fall2025'
+box_folder_path = 'JCBeiqueLab/BeiqueLabData1 - Documents/Behaviour Data/Jennifer/Fall2025'
 
 fetch = input('Fetch previous data? (y/n) ')
 if fetch == 'y':
