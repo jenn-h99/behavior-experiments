@@ -16,6 +16,10 @@ import json
 import os
 from boxsdk import OAuth2, Client
 TOKEN_FILE = '/home/pi/box_tokens.json'  # Change as needed
+
+# Box configuration
+DEFAULT_BOX_FOLDER_PATH = '/Users/jenniferhsieh/JCBeiqueLab/BeiqueLabData1 - Documents/Behaviour Data/Jennifer/Fall2025'
+
 # ------------------------------------------------------------------------------
 # Define some classes
 # ------------------------------------------------------------------------------
@@ -354,7 +358,18 @@ class data():
             json.dump(tokens, f, indent=4)
         print("✅ Tokens refreshed and saved.")
 
-    def Box_sync(self):
+    def Box_sync(self, box_folder_path=None):
+        """
+        Sync data file to a specific Box folder path
+        
+        Parameters:
+        -----------
+        box_folder_path: str, optional
+            Specific Box folder path to sync to. If None, uses default path.
+        """
+        if box_folder_path is None:
+            box_folder_path = DEFAULT_BOX_FOLDER_PATH
+        
         try:
             if not os.path.exists(self.TOKEN_FILE):
                 raise FileNotFoundError(f"Token file not found: {self.TOKEN_FILE}")
@@ -372,13 +387,59 @@ class data():
 
             client = Client(auth)
 
-            print(f"📤 Uploading {self.filename} to Box...")
-            root_folder = client.folder('0')
-            uploaded_file = root_folder.upload(self.filename)
+            print(f"📤 Uploading {self.filename} to Box folder: {box_folder_path}")
+            
+            # Navigate to or create the specific folder path
+            folder = self._get_or_create_box_folder(client, box_folder_path)
+            
+            # Upload file to the specific folder
+            uploaded_file = folder.upload(self.filename)
             print(f"✅ Uploaded: {uploaded_file.name}")
 
         except Exception as e:
             print(f"❌ Box sync failed: {e}")
+
+    def _get_or_create_box_folder(self, client, folder_path):
+        """
+        Navigate to or create a specific folder path in Box
+        
+        Parameters:
+        -----------
+        client: boxsdk.Client
+            Authenticated Box client
+        folder_path: str
+            Full path to the desired folder
+        
+        Returns:
+        --------
+        boxsdk.Folder
+            The target folder object
+        """
+        # Start from root folder
+        current_folder = client.folder('0')
+        
+        # Remove leading slash and split path
+        path_parts = folder_path.strip('/').split('/')
+        
+        for part in path_parts:
+            if not part:  # Skip empty parts
+                continue
+                
+            # Look for existing subfolder
+            found_folder = None
+            for item in current_folder.get_items():
+                if item.type == 'folder' and item.name == part:
+                    found_folder = item
+                    break
+            
+            if found_folder:
+                current_folder = found_folder
+            else:
+                # Create the folder if it doesn't exist
+                print(f"Creating Box folder: {part}")
+                current_folder = current_folder.create_subfolder(part)
+        
+        return current_folder
 
 
     def Store(self):
@@ -679,7 +740,7 @@ class ttl():
         self.opto_stim_length = opto_stim_length
         self.ISI_length = ISI_length
         self.total_length = total_length
-        # Setup GPIO pins for TTL pulses.
+        # Setup GPIOpins for TTL pulses.
         GPIO.setup(self.pin, GPIO.OUT)
         GPIO.output(self.pin, False)
 
@@ -693,8 +754,6 @@ class ttl():
             time.sleep(self.opto_stim_length)
             GPIO.output(self.pin, False)
             time.sleep(self.ISI_length)
-
-
 
 
 class ProbSwitchRule():
@@ -947,7 +1006,7 @@ def get_previous_data(mouse_number: str, protocol_name: str, countdown=True):
     Returns:
     --------
     A list, containing the following:
-rff
+
     prev_freq_rule: int
         The value of freq_rule for the last trial of the previous session.
 
