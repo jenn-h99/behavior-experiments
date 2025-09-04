@@ -37,6 +37,9 @@ experimenter = input('Initials: ')
 mouse_number = input('mouse number: ' )
 mouse_weight = float(input('mouse weight(g): '))
 
+# Box sync configuration
+dataset_repo = './datasets/'
+box_folder_path = '/Users/jenniferhsieh/JCBeiqueLab/BeiqueLabData1 - Documents/Behaviour Data/Jennifer/Fall2025'
 
 fetch = input('Fetch previous data? (y/n) ')
 if fetch == 'y':
@@ -422,7 +425,10 @@ if data.exp_quality == 'n':
 
 # Store the data in an HDF5 file and upload this file to Box.
 data.Store()
-data.Box_sync()  # Changed from data.Rclone() to data.Box_sync()
+
+# Sync to the specific Box folder path
+print('Syncing data to Box folder: {}'.format(box_folder_path))
+data.Box_sync(box_folder_path=box_folder_path)
 
 #delete the .wav files created for the experiment
 core.delete_tones()
