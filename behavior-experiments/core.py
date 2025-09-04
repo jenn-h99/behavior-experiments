@@ -26,20 +26,20 @@ DEFAULT_BOX_FOLDER_PATH = 'JCBeiqueLab/BeiqueLabData1/Behaviour Data/Jennifer/Fa
 
 
 class Tone:
-    '''
-    A parent class to handle auditory tones to be used during the task.
-
-    Attributes:
-    -----------
-    self.name: str
-        The filename of the corresponding wav file (e.g. '1000Hz.wav').
-
-    self.tone_length: float
-        The total duration (in seconds) of the tone.
-
-    self.sound: object
-        A pygame.mixer object corresponding to the tone.
-    '''
+        '''
+        A parent class to handle auditory tones to be used during the task.
+    
+        Attributes:
+        -----------
+        self.name: str
+            The filename of the corresponding wav file (e.g. '1000Hz.wav').
+    
+        self.tone_length: float
+            The total duration (in seconds) of the tone.
+    
+        self.sound: object
+            A pygame.mixer object corresponding to the tone.
+        '''
     def generate_tone(self):
         '''
         Use the sox library to generate a wav file corresponding to this tone.
