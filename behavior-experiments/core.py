@@ -159,12 +159,12 @@ class PulsingTone(Tone):
         # Generate wav files for pulse and silent inter-pulse interval
         os.system(f'sox -V0 -r 44100 -n -b 8 -c 1 pulse.wav synth '
                   f'{self.stim_length} sin {self.freq} vol -20dB')
-        os.system('sox -V0 -r 44100 -n -b 8 -c 1 interpulse.wav synth '
-                  '{self.stim_length} sin {self.freq} vol -150dB')
+        os.system(f'sox -V0 -r 44100 -n -b 8 -c 1 interpulse.wav synth '
+                  f'{self.stim_length} sin {self.freq} vol -150dB')
         # Generate a string with sequence of pulses to be to the tone
-        concat_files = ' pulse.wav interpulse.wav' * int(self.stim_number)
+        concat_files = ' pulse.wav interpulse.wav' * int(pulse_number)  # <-- Also fix variable name
         # Concatenate the pulse and IPI into a single file and delete originals
-        os.system(f'sox{concat_files} {self.name}.wav')
+        os.system(f'sox{concat_files} {self.name}')  # <-- Remove .wav extension
         os.system('rm pulse.wav')
         os.system('rm interpulse.wav')
 
