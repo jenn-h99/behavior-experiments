@@ -23,22 +23,6 @@ import threading
 import core
 import os
 
-# Try to import pygame, if it fails, install it
-try:
-    from pygame import mixer
-except ImportError:
-    print("pygame not found. Installing...")
-    import subprocess
-    subprocess.check_call(['sudo', 'apt', 'install', '-y', 'python3-pygame'])
-    from pygame import mixer
-
-# Comment out picamera for now - replace with picamera2 or remove if not needed
-# from picamera import PiCamera
-
-os.environ['SDL_AUDIODRIVER'] = 'alsa'
-os.environ['SDL_AUDIO_BUFFER_SIZE'] = '4096'  # Increase buffer size
-mixer.pre_init(buffer=4096)  # Set buffer size
-mixer.init(frequency=44100)
 
 camera = core.CameraManager()
 
