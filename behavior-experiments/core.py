@@ -5,7 +5,9 @@ Created on Mon Jun 24 15:48:29 2019
 
 @author: sebastienmaille
 """
+import subprocess
 import time
+import os
 import RPi.GPIO as GPIO
 import numpy as np
 import h5py
@@ -13,7 +15,6 @@ from pygame import mixer
 import boxsdk
 from datetime import datetime
 import json
-import os
 from boxsdk import OAuth2, Client
 TOKEN_FILE = '/home/pi/box_tokens.json'  # Change as needed
 
@@ -24,6 +25,39 @@ DEFAULT_BOX_FOLDER_PATH = 'JCBeiqueLab/BeiqueLabData1/Behaviour Data/Jennifer/Fa
 # Define some classes
 # ------------------------------------------------------------------------------
 
+
+# Enhanced pygame compatibility layer
+class AudioMixer:
+    @staticmethod
+    def init(frequency=22050, size=-16, channels=2, buffer=512):
+        # Store audio settings but don't fail
+        AudioMixer.frequency = frequency
+        AudioMixer.buffer = buffer
+        return None
+    
+    @staticmethod
+    def pre_init(frequency=22050, size=-16, channels=2, buffer=512):
+        # Accept all parameters that pygame.mixer.pre_init expects
+        AudioMixer.frequency = frequency
+        AudioMixer.buffer = buffer
+        return None
+    
+    class Sound:
+        def __init__(self, filename):
+            self.filename = filename
+        
+        def play(self):
+            # Use system audio instead of pygame
+            try:
+                subprocess.run(['aplay', self.filename], 
+                             check=False, 
+                             stdout=subprocess.DEVNULL, 
+                             stderr=subprocess.DEVNULL)
+            except:
+                print(f"Could not play {self.filename}")
+
+# Create mixer object that matches pygame.mixer interface
+mixer = AudioMixer()
 
 class Tone:
     '''
