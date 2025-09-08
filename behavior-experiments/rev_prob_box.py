@@ -112,9 +112,8 @@ GPIO.setmode(GPIO.BCM)
 # Set the enable pins for L and R stepper motors to 1 to prevent overheating
 GPIO.setup(L_enablePIN, GPIO.OUT, initial=1)
 GPIO.setup(R_enablePIN, GPIO.OUT, initial=1)
+core.mixer.init(frequency=44100)
 
-# Initialize the mixer (for tones) at the proper sampling rate.
-mixer.init(frequency=44100)
 
 # Create Stepper class instances for left and right reward delivery
 water_L = core.stepper(L_enablePIN, L_directionPIN, L_stepPIN, L_emptyPIN)
