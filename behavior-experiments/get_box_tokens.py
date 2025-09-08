@@ -6,8 +6,8 @@ def get_tokens(auth_code):
     data = {
         'grant_type': 'authorization_code',
         'code': auth_code,
-        'client_id': 'hpqcaj9sk34n3ubp38jeekmuk194cqwr',
-        'client_secret': 'T6j1wC6JacnpZcRpWprYPzlWeHYX1gEa',
+        'client_id': 'hpqcaj9sk34n3ubp38jeekmuk194cqwr',  # Keep this
+        'client_secret': 'HB0lyehwMfXOkxQTwGFtB9MlUairjqLD',  # Keep this
         'redirect_uri': 'https://example.com',
     }
 
@@ -25,5 +25,5 @@ def get_tokens(auth_code):
         print(f"Response: {response.text}")
 
 if __name__ == "__main__":
-    auth_code = 'OoIXHXuLTs0gUEJIlRrVPNC65UpoSihU'  # replace with your actual code
+    auth_code = '8pEi2PUBIJcRvTXj1Q8XmPpK6SvpWm55'  # replace with your actual code
     get_tokens(auth_code)
