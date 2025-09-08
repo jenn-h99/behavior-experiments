@@ -22,12 +22,13 @@ import numpy as np
 import threading
 import core
 import os
+from pygame import mixer  # Moved this import up here
+from picamera import PiCamera
+
 os.environ['SDL_AUDIODRIVER'] = 'alsa'
 os.environ['SDL_AUDIO_BUFFER_SIZE'] = '4096'  # Increase buffer size
 mixer.pre_init(buffer=4096)  # Set buffer size
 mixer.init(frequency=44100)
-from picamera import PiCamera
-from pygame import mixer
 
 camera = core.CameraManager()
 
