@@ -7,7 +7,7 @@ def get_tokens(auth_code):
         'grant_type': 'authorization_code',
         'code': auth_code,
         'client_id': 'hpqcaj9sk34n3ubp38jeekmuk194cqwr',
-        'client_secret': 'HB0lyehwMfXOkxQTwGFtB9MlUairjqLD',
+        'client_secret': 'T6j1wC6JacnpZcRpWprYPzlWeHYX1gEa',
         'redirect_uri': 'https://example.com',
     }
 
