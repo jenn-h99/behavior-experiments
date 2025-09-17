@@ -3,14 +3,14 @@
 """
 Created on Mon Jan 17 16:21:22 2022
 
-@author: sebastienmaille
+@author: jennifer
 """
-protocol_name = 'habituation'
+protocol_name = 'habituation_box'
 protocol_description = ('The goal of this protocol is to 1) habituate the mouse'
                         'to the behavior rig and all associated stimuli, and'
                         '2) to begin associating licks on lickports to water'
                         'delivery. On each trial, one of two lickports is armed'
-                        'such that licking that port willr result in water'
+                        'such that licking that port will result in water'
                         'delivery. ITIs are short (~2 seconds)')
                         
 import time
@@ -19,11 +19,8 @@ import numpy as np
 import os
 import threading
 import core
-from picamera import PiCamera
-from pygame import mixer
 
-camera = PiCamera()
-camera.start_preview(fullscreen = False, window = (0,-44,350,400))
+camera = core.CameraManager()
 
 #-------------------------------------------------------------------------------
 # Set experimental parameters:
@@ -32,6 +29,9 @@ camera.start_preview(fullscreen = False, window = (0,-44,350,400))
 experimenter = input('Initials: ')
 mouse_number = input('mouse number: ' )
 mouse_weight = float(input('mouse weight(g): '))
+
+# Box sync configuration
+box_folder_path = 'JCBeiqueLab/BeiqueLabData1/Behaviour Data/Jennifer/Fall2025'
 
 block_number = input('block number: ' )
 n_trials = int(input('How many trials?: ' ))
@@ -55,7 +55,6 @@ L_directionPIN = 24 # Direction pin for left stepper motor.
 L_stepPIN = 25 # Step pin for left stepper motor.
 L_emptyPIN = 20 # Empty switch pin for left stepper motor.
 L_lickometer = 12 # Input pin for lickometer (black wire).
-
 
 R_enablePIN = 10 # Enable pin for right stepper motor.
 R_directionPIN = 9 # Direction pin for right stepper motor.
@@ -81,7 +80,7 @@ GPIO.setup(L_enablePIN, GPIO.OUT, initial = 1)
 GPIO.setup(R_enablePIN, GPIO.OUT, initial = 1)
 
 # Initialize the mixer (for tones) at the proper sampling rate.
-mixer.init(frequency = 44100)
+core.mixer.init(frequency = 44100)
 
 # Create Stepper class instances for left and right reward delivery.
 water_L = core.stepper(L_enablePIN, L_directionPIN, L_stepPIN, L_emptyPIN)
@@ -116,7 +115,7 @@ total_reward_R = 0
 
 for trial in trials:
 
-    print(f'Trial {trial}, total reward: {total_reward_L+total_reward_R}')
+    print('Trial {}, total reward: {}'.format(trial, total_reward_L+total_reward_R))
     
     data._t_start_abs[trial] = time.time()*1000 #Set time at beginning of trial
     data.t_start[trial] = data._t_start_abs[trial] - data._t_start_abs[0]
@@ -212,12 +211,12 @@ for trial in trials:
     time.sleep(ITI_) # Wait for the length of the inter-trial interval.
 
 tone_end.play() # Play tone to signal the end of the experiment.
-camera.stop_preview()
+camera.close_camera()
 
-print(f'Total L reward: {total_reward_L} uL')
-print(f'Total R reward: {total_reward_R} uL')
+print('Total L reward: {} uL'.format(total_reward_L))
+print('Total R reward: {} uL'.format(total_reward_R))
 data.total_reward = (total_reward_L + total_reward_R)
-print(f'Total reward: {data.total_reward}uL')
+print('Total reward: {}uL'.format(data.total_reward))
 
 data.exp_quality = input('Should this data be used? (y/n): ')
 if data.exp_quality == 'n':
@@ -225,12 +224,12 @@ if data.exp_quality == 'n':
     # string that will be stored with the data.
     data.exp_msg = input('What went wrong?: ')
 
-# Store the data in an HDF5 file and upload this file to a remote drive.
+# Store the data in an HDF5 file and upload this file to Box.
 data.Store()
-rclone_cfg_path = '/home/pi/.config/rclone/rclone.conf'
-data_repo_path = 'data1:/Behaviour Data/Jennifer/all mice'
-temp_rclone_path = '/home/pi/Desktop/temp_rclone/'
-temp_data_path = '/home/pi/Desktop/temporary-data/'
-data.Rclone()
 
+# Sync to the mouse-specific Box folder
+print('Syncing data to Box folder: {}/{}'.format(box_folder_path, mouse_number))
+data.Box_sync(box_folder_path=box_folder_path)
+
+# Delete the .wav files created for the experiment
 core.delete_tones()
