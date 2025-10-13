@@ -25,5 +25,5 @@ def get_tokens(auth_code):
         print(f"Response: {response.text}")
 
 if __name__ == "__main__":
-    auth_code = 'l38uWr3PLNsxV3vhGkCl4tnLSv4UfCvc'
+    auth_code = 'Eylhyv4mMLZFrJ7rZMlxWRq1FtrMKwpy'
     get_tokens(auth_code)
