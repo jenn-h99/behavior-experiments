@@ -74,7 +74,7 @@ end_tone_length = 8
 reward_size = 10 # Volume(uL) of water rewards.
 p_rew = 0.9 # Probability of reward following correct choice
 criterion = [19,20] # Mouse must get [0] of [1] correct to reach criterion.
-countdown_start = 250
+countdown_start = 500
 
 #-------------------------------------------------------------------------------
 #Assign GPIO pins:
