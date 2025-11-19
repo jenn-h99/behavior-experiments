@@ -1,3 +1,5 @@
+protocl_name ='rev_prob_determ.py'
+
 import time
 import boxsdk
 import RPi.GPIO as GPIO
@@ -6,7 +8,6 @@ import threading
 import core
 import os
 
-protocl_name ='rev_prob_determ.py'
 camera = core.CameraManager()
 
 #------------------------------------------------------------------------------
