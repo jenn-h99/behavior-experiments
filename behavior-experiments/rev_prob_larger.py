@@ -1,3 +1,5 @@
+protocl_name ='rev_prob_larger'
+
 import time
 import boxsdk
 import RPi.GPIO as GPIO
@@ -5,8 +7,6 @@ import numpy as np
 import threading
 import core
 import os
-
-protocl_name ='rev_prob_larger.py'
 
 camera = core.CameraManager()
 
