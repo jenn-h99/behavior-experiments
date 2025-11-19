@@ -6,6 +6,7 @@ import threading
 import core
 import os
 
+protocl_name ='rev_prob_larger.py'
 
 camera = core.CameraManager()
 
