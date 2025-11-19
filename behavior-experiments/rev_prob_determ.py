@@ -1,4 +1,4 @@
-protocl_name ='rev_prob_determ.py'
+protocl_name ='rev_prob_determ'
 
 import time
 import boxsdk
