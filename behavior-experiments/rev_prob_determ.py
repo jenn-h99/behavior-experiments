@@ -129,7 +129,7 @@ if ttl_experiment == 'y':
 
 #Set the time for the beginning of the block
 trials = np.arange(n_trials)
-data = core.data(protocol_name, protocol_description, n_trials, mouse_number,
+data = core.data(protocol_name, n_trials, mouse_number,
                  block_number, experimenter, mouse_weight)
 
 total_reward_L = 0
