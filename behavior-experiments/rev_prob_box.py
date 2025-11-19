@@ -4,7 +4,7 @@
 Created on Tue Aug 12 11:47:22 2021
 @author: jennifer
 """
-protocol_name = 'rev_prob_box.py'
+protocol_name = 'rev_prob_box'
 protocol_description = ('In this protocol, one of 2 sample cues (differing based'
                         'on frequency) is immediately followed by a response '
                         'period. During this period, the first lickport that '
