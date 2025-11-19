@@ -6,7 +6,7 @@ import threading
 import core
 import os
 
-
+protocl_name ='rev_prob_determ.py'
 camera = core.CameraManager()
 
 #------------------------------------------------------------------------------
