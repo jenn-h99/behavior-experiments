@@ -55,8 +55,10 @@ wrong_tone_length = 1
 end_tone_freq = 4000 # Tone to signal the end of the experiment.
 end_tone_length = 8
 
-reward_size = 10 # Volume(uL) of water rewards (standard small reward).
+reward_size = 70 # Volume(uL) of water rewards (standard reward).
+reward_steps = 1750 # Steps for 70 µL (250 steps = 10 µL, so 70 µL = 1750 steps)
 large_reward_size = 100 # Volume(uL) of large reward for one random correct trial.
+large_reward_steps = 2500 # Steps for 100 µL (100 µL = 2500 steps)
 p_rew = 1.0 # Probability of reward following correct choice
 criterion = [19,20] # Mouse must get [0] of [1] correct to reach criterion.
 countdown_start = 500
@@ -160,12 +162,14 @@ for trial in trials:
 
     left_trial_ = np.random.rand() < 0.5 # 50% chance of L trial
     
-    # Determine reward size for this trial (only matters if correct response)
-    current_reward_size = reward_size
+    # Determine reward size and steps for this trial (only matters if correct response)
     if trial == large_reward_trial and not large_reward_delivered:
         # This trial is the selected large reward trial
-        # (will only be delivered if response is correct)
         current_reward_size = large_reward_size
+        current_reward_steps = large_reward_steps
+    else:
+        current_reward_size = reward_size
+        current_reward_steps = reward_steps
     
     if ttl_experiment == 'y':
         TTL_trigger.pulse()
@@ -201,7 +205,7 @@ for trial in trials:
                 if np.random.rand() < p_rew:
                     data.t_rew_l[trial] = (time.time()*1000
                                            - data._t_start_abs[trial])
-                    water_L.Reward(volume=current_reward_size)
+                    water_L.Reward_with_steps(current_reward_steps)
                     data.v_rew_l[trial] = current_reward_size
                     total_reward_L += current_reward_size
                     
@@ -231,7 +235,7 @@ for trial in trials:
                 else: 
                     data.t_rew_r[trial] = (time.time()*1000
                                            - data._t_start_abs[trial])
-                    water_R.Reward(volume=reward_size)
+                    water_R.Reward_with_steps(reward_steps)
                     data.v_rew_r[trial] = reward_size
                     total_reward_R += reward_size
 
@@ -272,7 +276,7 @@ for trial in trials:
                 if np.random.rand() < p_rew: 
                     data.t_rew_r[trial] = (time.time()*1000
                                            - data._t_start_abs[trial])
-                    water_R.Reward(volume=current_reward_size)
+                    water_R.Reward_with_steps(current_reward_steps)
                     data.v_rew_r[trial] = current_reward_size
                     total_reward_R += current_reward_size
                     
@@ -302,7 +306,7 @@ for trial in trials:
                 else: 
                     data.t_rew_l[trial] = (time.time()*1000
                                            - data._t_start_abs[trial])
-                    water_L.Reward(volume=reward_size)
+                    water_L.Reward_with_steps(reward_steps)
                     data.v_rew_l[trial] = reward_size
                     total_reward_L += reward_size
 
@@ -368,11 +372,11 @@ for trial in trials:
     # If 8 unrewarded trials in a row, deliver rewards through both ports.
     if len(rule.correct_trials) > 8 and sum(rule.correct_trials[-8:]) == 0:
         rule.L_tone.play()
-        water_L.Reward(volume=reward_size)
+        water_L.Reward_with_steps(reward_steps)
         supp_reward_L += reward_size
         time.sleep(1)
         rule.R_tone.play()
-        water_R.Reward(volume=reward_size)
+        water_R.Reward_with_steps(reward_steps)
         supp_reward_R += reward_size
         time.sleep(1)
         rule.correct_trials = []
@@ -385,7 +389,7 @@ for trial in trials:
             else:
                 rule.R_tone.play()
                 
-            water_R.Reward(volume=reward_size)
+            water_R.Reward_with_steps(reward_steps)
             supp_reward_R += reward_size
             time.sleep(1)
         correct_side.append('R')
@@ -398,7 +402,7 @@ for trial in trials:
             else:
                 rule.L_tone.play()
                 
-            water_L.Reward(volume=reward_size)
+            water_L.Reward_with_steps(reward_steps)
             supp_reward_L += reward_size
             time.sleep(1)
         correct_side.append('L')
