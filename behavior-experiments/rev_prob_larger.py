@@ -63,11 +63,6 @@ p_rew = 1.0 # Probability of reward following correct choice
 criterion = [19,20] # Mouse must get [0] of [1] correct to reach criterion.
 countdown_start = 500
 
-# Select one random trial to receive the large reward
-# This will be checked against correct trials only
-large_reward_trial = np.random.randint(0, n_trials)
-print('Large reward trial will be trial #{} (if correct)'.format(large_reward_trial))
-
 #-------------------------------------------------------------------------------
 #Assign GPIO pins:
 #-------------------------------------------------------------------------------
@@ -125,6 +120,11 @@ tone_end = core.PureTone(end_tone_freq, end_tone_length, vol=-25)
 
 rule = core.Rule([highfreq,lowfreq], left_port, criterion,
                  countdown_start, countdown)
+
+# Select one random trial to receive the large reward
+# This will be checked against correct trials only
+large_reward_trial = np.random.randint(0, n_trials)
+print('Large reward trial will be trial #{} (if correct)'.format(large_reward_trial))
 
 if ttl_experiment == 'y':
     #set up ttl class instances triggers and marker TTL output
