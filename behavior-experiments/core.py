@@ -666,20 +666,20 @@ class stepper():
             print('the syringe is empty')
 
     def Reward_with_steps(self, steps):
-    """
-    Deliver a reward with a specific number of steps.
-    
-    Parameters:
-    -----------
-    steps : int
-        Number of steps for the stepper motor.
-        Based on calibration: 250 steps = 10 µL
-        So: 25 steps = 1 µL
-    """
-    if GPIO.input(self.emptyPIN):
-        self.Motor(1, steps)
-    else:
-        print('the syringe is empty')
+        """
+        Deliver a reward with a specific number of steps.
+        
+        Parameters:
+        -----------
+        steps : int
+            Number of steps for the stepper motor.
+            Based on calibration: 250 steps = 10 µL
+            So: 25 steps = 1 µL
+        """
+        if GPIO.input(self.emptyPIN):
+            self.Motor(1, steps)
+        else:
+            print('the syringe is empty')
         
 
     def Refill(self):
