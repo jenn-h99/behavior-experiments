@@ -121,10 +121,19 @@ tone_end = core.PureTone(end_tone_freq, end_tone_length, vol=-25)
 rule = core.Rule([highfreq,lowfreq], left_port, criterion,
                  countdown_start, countdown)
 
+# Initialize random seed to ensure proper randomization
+np.random.seed()
+
 # Select one random trial to receive the large reward
 # This will be checked against correct trials only
 large_reward_trial = np.random.randint(0, n_trials)
-print('Large reward trial will be trial #{} (if correct)'.format(large_reward_trial))
+print('='*60)
+print('LARGE REWARD CONFIGURATION:')
+print('  Total trials: {}'.format(n_trials))
+print('  Large reward trial: #{} (if correct)'.format(large_reward_trial))
+print('  Standard reward: {} uL'.format(reward_size))
+print('  Large reward: {} uL'.format(large_reward_size))
+print('='*60)
 
 if ttl_experiment == 'y':
     #set up ttl class instances triggers and marker TTL output
@@ -167,6 +176,7 @@ for trial in trials:
         # This trial is the selected large reward trial
         current_reward_size = large_reward_size
         current_reward_steps = large_reward_steps
+        print('  >>> This is the LARGE REWARD trial! (Trial {})'.format(trial))
     else:
         current_reward_size = reward_size
         current_reward_steps = reward_steps
