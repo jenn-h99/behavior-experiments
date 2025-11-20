@@ -55,10 +55,16 @@ wrong_tone_length = 1
 end_tone_freq = 4000 # Tone to signal the end of the experiment.
 end_tone_length = 8
 
-reward_size = 70 # Volume(uL) of water rewards.
-p_rew = 0.9 # Probability of reward following correct choice
+reward_size = 10 # Volume(uL) of water rewards (standard small reward).
+large_reward_size = 100 # Volume(uL) of large reward for one random correct trial.
+p_rew = 1.0 # Probability of reward following correct choice
 criterion = [19,20] # Mouse must get [0] of [1] correct to reach criterion.
 countdown_start = 500
+
+# Select one random trial to receive the large reward
+# This will be checked against correct trials only
+large_reward_trial = np.random.randint(0, n_trials)
+print('Large reward trial will be trial #{} (if correct)'.format(large_reward_trial))
 
 #-------------------------------------------------------------------------------
 #Assign GPIO pins:
@@ -138,6 +144,7 @@ total_reward_R = 0
 supp_reward_R = 0
 performance = 0 # Total number of correct responses (to print at each trial)
 correct_side = [] # Ports from which past rewards were received (to track bias)
+large_reward_delivered = False # Track if large reward has been given
 
 #-------------------------------------------------------------------------------
 # Iterate through trials:
@@ -152,6 +159,13 @@ for trial in trials:
     thread_R = threading.Thread(target = lick_port_R.Lick, args = (1000, 8))
 
     left_trial_ = np.random.rand() < 0.5 # 50% chance of L trial
+    
+    # Determine reward size for this trial (only matters if correct response)
+    current_reward_size = reward_size
+    if trial == large_reward_trial and not large_reward_delivered:
+        # This trial is the selected large reward trial
+        # (will only be delivered if response is correct)
+        current_reward_size = large_reward_size
     
     if ttl_experiment == 'y':
         TTL_trigger.pulse()
@@ -187,9 +201,14 @@ for trial in trials:
                 if np.random.rand() < p_rew:
                     data.t_rew_l[trial] = (time.time()*1000
                                            - data._t_start_abs[trial])
-                    water_L.Reward()
-                    data.v_rew_l[trial] = reward_size
-                    total_reward_L += reward_size
+                    water_L.Reward(volume=current_reward_size)
+                    data.v_rew_l[trial] = current_reward_size
+                    total_reward_L += current_reward_size
+                    
+                    # Mark large reward as delivered if this was the special trial
+                    if current_reward_size == large_reward_size:
+                        large_reward_delivered = True
+                        print('*** LARGE REWARD ({}uL) DELIVERED ***'.format(large_reward_size))
 
                 # Stochastic reward omission for correct lick
                 else: 
@@ -208,11 +227,11 @@ for trial in trials:
                 if np.random.rand() < p_rew: 
                     tone_wrong.play()
 
-                # Reward delivery for incorrect lick
+                # Reward delivery for incorrect lick (always standard size)
                 else: 
                     data.t_rew_r[trial] = (time.time()*1000
                                            - data._t_start_abs[trial])
-                    water_R.Reward()
+                    water_R.Reward(volume=reward_size)
                     data.v_rew_r[trial] = reward_size
                     total_reward_R += reward_size
 
@@ -253,9 +272,14 @@ for trial in trials:
                 if np.random.rand() < p_rew: 
                     data.t_rew_r[trial] = (time.time()*1000
                                            - data._t_start_abs[trial])
-                    water_R.Reward()
-                    data.v_rew_r[trial] = reward_size
-                    total_reward_R += reward_size
+                    water_R.Reward(volume=current_reward_size)
+                    data.v_rew_r[trial] = current_reward_size
+                    total_reward_R += current_reward_size
+                    
+                    # Mark large reward as delivered if this was the special trial
+                    if current_reward_size == large_reward_size:
+                        large_reward_delivered = True
+                        print('*** LARGE REWARD ({}uL) DELIVERED ***'.format(large_reward_size))
 
                 # Stochastic reward omission
                 else:
@@ -274,11 +298,11 @@ for trial in trials:
                 if np.random.rand() < p_rew: 
                     tone_wrong.play()
 
-                # Stochastic rew delivery for incorrect choice
+                # Stochastic rew delivery for incorrect choice (always standard size)
                 else: 
                     data.t_rew_l[trial] = (time.time()*1000
                                            - data._t_start_abs[trial])
-                    water_L.Reward()
+                    water_L.Reward(volume=reward_size)
                     data.v_rew_l[trial] = reward_size
                     total_reward_L += reward_size
 
@@ -344,11 +368,11 @@ for trial in trials:
     # If 8 unrewarded trials in a row, deliver rewards through both ports.
     if len(rule.correct_trials) > 8 and sum(rule.correct_trials[-8:]) == 0:
         rule.L_tone.play()
-        water_L.Reward()
+        water_L.Reward(volume=reward_size)
         supp_reward_L += reward_size
         time.sleep(1)
         rule.R_tone.play()
-        water_R.Reward()
+        water_R.Reward(volume=reward_size)
         supp_reward_R += reward_size
         time.sleep(1)
         rule.correct_trials = []
@@ -361,7 +385,7 @@ for trial in trials:
             else:
                 rule.R_tone.play()
                 
-            water_R.Reward()
+            water_R.Reward(volume=reward_size)
             supp_reward_R += reward_size
             time.sleep(1)
         correct_side.append('R')
@@ -374,7 +398,7 @@ for trial in trials:
             else:
                 rule.L_tone.play()
                 
-            water_L.Reward()
+            water_L.Reward(volume=reward_size)
             supp_reward_L += reward_size
             time.sleep(1)
         correct_side.append('L')
@@ -396,6 +420,12 @@ print('Total R reward: {} uL + {}'.format(total_reward_R, supp_reward_R))
 data.total_reward = (total_reward_L + supp_reward_L
                      + total_reward_R + supp_reward_R)
 print('Total reward: {}uL'.format(data.total_reward))
+
+# Report if large reward was delivered
+if large_reward_delivered:
+    print('Large reward of {}uL was successfully delivered!'.format(large_reward_size))
+else:
+    print('Large reward was NOT delivered (trial #{} was incorrect or not reached)'.format(large_reward_trial))
 
 # Ask the user if there were any problems with the experiment. If so, prompt
 # the user for an explanation that will be stored in the data file.
