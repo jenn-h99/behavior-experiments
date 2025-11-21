@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+ #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 Created on Mon Jun 24 15:48:29 2019
@@ -15,6 +15,7 @@ import boxsdk
 from datetime import datetime
 import json
 from boxsdk import OAuth2, Client
+import shutil
 TOKEN_FILE = '/home/pi/box_tokens.json'  # Change as needed
 
 # Box configuration
@@ -162,9 +163,9 @@ class PulsingTone(Tone):
         os.system(f'sox -V0 -r 44100 -n -b 8 -c 1 interpulse.wav synth '
                   f'{self.stim_length} sin {self.freq} vol -150dB')
         # Generate a string with sequence of pulses to be to the tone
-        concat_files = ' pulse.wav interpulse.wav' * int(pulse_number)  # <-- Also fix variable name
+        concat_files = ' pulse.wav interpulse.wav' * int(pulse_number)
         # Concatenate the pulse and IPI into a single file and delete originals
-        os.system(f'sox{concat_files} {self.name}')  # <-- Remove .wav extension
+        os.system(f'sox{concat_files} {self.name}')
         os.system('rm pulse.wav')
         os.system('rm interpulse.wav')
 
@@ -393,7 +394,8 @@ class data():
  
     def Box_sync(self, box_folder_path=None):
         """
-        Sync data file to a specific Box folder path, creating a mouse-specific subfolder
+        Sync data file to a specific Box folder path, creating a mouse-specific subfolder.
+        Also saves a local copy to /home/pi/Desktop/yesterday_data for next-day retrieval.
         
         Parameters:
         -----------
@@ -403,6 +405,32 @@ class data():
         if box_folder_path is None:
             box_folder_path = DEFAULT_BOX_FOLDER_PATH
         
+        # Local yesterday_data path
+        yesterday_data_path = '/home/pi/Desktop/yesterday_data/'
+        
+        # Create yesterday_data directory if it doesn't exist
+        if not os.path.exists(yesterday_data_path):
+            os.makedirs(yesterday_data_path)
+            print(f"✅ Created directory: {yesterday_data_path}")
+        
+        # Clean out old files from yesterday_data folder (keep only most recent)
+        for item in os.listdir(yesterday_data_path):
+            old_file = os.path.join(yesterday_data_path, item)
+            try:
+                os.remove(old_file)
+                print(f"🗑️  Removed old file: {item}")
+            except Exception as e:
+                print(f"Warning: Could not remove {item}: {e}")
+        
+        # Copy today's data file to yesterday_data folder
+        try:
+            dest_path = os.path.join(yesterday_data_path, self.filename)
+            shutil.copy2(self.filename, dest_path)
+            print(f"💾 Saved local copy to: {dest_path}")
+        except Exception as e:
+            print(f"⚠️  Warning: Could not save local copy: {e}")
+        
+        # Now upload to Box
         try:
             if not os.path.exists(self.TOKEN_FILE):
                 raise FileNotFoundError(f"Token file not found: {self.TOKEN_FILE}")
@@ -429,7 +457,7 @@ class data():
             
             # Upload file to the mouse-specific folder
             uploaded_file = folder.upload(self.filename)
-            print(f"✅ Uploaded: {uploaded_file.name}")
+            print(f"✅ Uploaded to Box: {uploaded_file.name}")
 
         except Exception as e:
             print(f"❌ Box sync failed: {e}")
@@ -1031,8 +1059,8 @@ class Rule():
 
 def get_previous_data(mouse_number: str, protocol_name: str, countdown=True):
     '''
-    Uses rclone to get the most recent experimental data available for this
-    mouse. Prints some relevant information to the console for the experimenter
+    Gets the most recent experimental data for this mouse from the local
+    yesterday_data folder. Prints relevant information to the console.
 
     Arguments:
     ----------
@@ -1044,7 +1072,7 @@ def get_previous_data(mouse_number: str, protocol_name: str, countdown=True):
         protocol name from previous data, and will warn the user if they are
         different.
 
-    countdown: bool, default = False
+    countdown: bool, default = True
         Indicates whether to search for and return an inter-day countdown
         of trials between reaching criterion and a rule switch.
 
@@ -1052,83 +1080,90 @@ def get_previous_data(mouse_number: str, protocol_name: str, countdown=True):
     --------
     A list, containing the following:
 
-    prev_freq_rule: int
-        The value of freq_rule for the last trial of the previous session.
+    prev_p_index: int
+        The value of p_index for the last trial of the previous session.
 
     prev_left_port: int
         The value of left_port for the last trial of the previous session.
 
-    trial_countdown: int
-        If countdown argument is set to True, indicates the last value of the
-        reversal trial countdown from the previous session.
+    trial_countdown: int/float
+        The last value of the reversal trial countdown from the previous session.
+
+    prev_expert: bool
+        Whether the mouse was marked as expert in the previous session.
     '''
-    # Paths for rclone config file, data repo (on rclone) and a local directory
-    # to temporarily store the fetched data.
-    rclone_cfg_path = '/home/pi/.config/rclone/rclone.conf'
-    data_repo_path = 'data1:Behaviour Data/Jennifer/all mice/'
-    temp_rclone_path = '/home/pi/Desktop/temp_rclone/'
-    temp_data_path = '/home/pi/Desktop/temporary-data/'
-
-    # Empty the temporary data folder
-    for item in os.listdir(temp_data_path):
-        os.remove(temp_data_path + item)
-    # Read rclone config file
-    with open(rclone_cfg_path) as f:
-        rclone_cfg = f.read()
-
-    # Generate dictionary with a string listing all dates
-    prev_dates = rclone.with_config(rclone_cfg).run_cmd(
-        command='lsf', extra_args=[data_repo_path+str(mouse_number)])
-    # Get most recent date
-    last_date = prev_dates['out'][-12:-2].decode()
-
-    last_data_path = f'{data_repo_path}{mouse_number}/{last_date}/'
-    # Copy all files from most recent date to the temp_data folder
-
-    rclone.with_config(rclone_cfg).run_cmd(
-        command='copy', extra_args=[last_data_path, temp_data_path])
-
-    os.system(f'rclone copy "{last_data_path}" {temp_data_path} --progress')
-    # Double quotes around last_data_path to make it a single argument.
-
-    last_file = sorted(os.listdir(temp_data_path))[-1]
-
-    with h5py.File(temp_data_path+last_file, 'r') as f:
-        # Get relevant information from the data file.
-        prev_protocol = f.attrs['protocol_name']
-        prev_user = f.attrs['experimenter']
-        prev_weight = f.attrs['mouse_weight']
-        prev_countdown = f['rule']['countdown'][-1]
-        prev_left_port = f['rule']['left_port'][-1]
-        prev_p_index = f['rule']['p_index'][-1]
-        prev_expert = f['rule']['expert'][-1]
-        prev_water = f.attrs['total_reward']
-        prev_trials = len(f['t_start'])
-        prev_resp = f['response']
-        prev_resp_decoded = np.array([i.decode('utf-8') for i in prev_resp])
-        prev_L = round((np.sum(prev_resp_decoded == 'L') / prev_trials), 2)
-        prev_R = round((np.sum(prev_resp_decoded == 'R') / prev_trials), 2)
-        prev_N = round((np.sum(prev_resp_decoded == 'N') / prev_trials), 2)
-
-        # Print some relevant information to the console
-        print(f'Date of last experiment: {last_date}')
-        print(f'Previous user: {prev_user}')
-        print(f'Previous weight: {prev_weight}')
-        print(f'Previous protocol: {prev_protocol}')
-        print(f'Previous rule: [{int(prev_left_port)}]')
-        print(f'Previous p_index: {prev_p_index}')
-        print(f'Previous water total: {prev_water}')
-        print(f'Previous trial number: {prev_trials}')
-        print(f'Previous resp fraction: L:{prev_L}, R:{prev_R}, N:{prev_N}')
-        if not np.isnan(prev_countdown):
-            print(f'Reversal countdown: {prev_countdown}')
-
-    # Verify that the protocol is the same as previous. If not, warn user.
-    if prev_protocol != protocol_name:
-        input('--WARNING-- using a different protocol than last time.'
-              'Make sure this is intentional.')
-
-    return [prev_p_index, prev_left_port, prev_countdown, prev_expert]
+    yesterday_data_path = '/home/pi/Desktop/yesterday_data/'
+    
+    # Check if yesterday_data folder exists
+    if not os.path.exists(yesterday_data_path):
+        print(f"⚠️  No yesterday_data folder found at {yesterday_data_path}")
+        print("Returning default values...")
+        return [0, 1, np.nan, False]
+    
+    # Get all .hdf5 files for this mouse
+    all_files = os.listdir(yesterday_data_path)
+    mouse_files = [f for f in all_files if f.startswith(f'ms{mouse_number}_') and f.endswith('.hdf5')]
+    
+    if not mouse_files:
+        print(f"⚠️  No previous data found for mouse {mouse_number}")
+        print("Returning default values...")
+        return [0, 1, np.nan, False]
+    
+    # Get the most recent file (should only be one, but just in case)
+    mouse_files.sort(reverse=True)  # Sort by filename (which includes date)
+    last_file = mouse_files[0]
+    
+    print(f"📂 Found previous data: {last_file}")
+    
+    try:
+        # Read data from the HDF5 file
+        file_path = os.path.join(yesterday_data_path, last_file)
+        with h5py.File(file_path, 'r') as f:
+            # Get relevant information from the data file
+            prev_protocol = f.attrs['protocol_name']
+            prev_user = f.attrs['experimenter']
+            prev_weight = f.attrs['mouse_weight']
+            prev_countdown = f['rule']['countdown'][-1]
+            prev_left_port = f['rule']['left_port'][-1]
+            prev_p_index = f['rule']['p_index'][-1]
+            prev_expert = f['rule']['expert'][-1]
+            prev_water = f.attrs['total_reward']
+            prev_trials = len(f['t_start'])
+            prev_resp = f['response']
+            prev_resp_decoded = np.array([i.decode('utf-8') for i in prev_resp])
+            prev_L = round((np.sum(prev_resp_decoded == 'L') / prev_trials), 2)
+            prev_R = round((np.sum(prev_resp_decoded == 'R') / prev_trials), 2)
+            prev_N = round((np.sum(prev_resp_decoded == 'N') / prev_trials), 2)
+            
+            # Extract date from filename (format: msXXX_YYYY-MM-DD_blockX.hdf5)
+            last_date = last_file.split('_')[1]
+            
+            # Print relevant information to the console
+            print('='*50)
+            print(f'📅 Date of last experiment: {last_date}')
+            print(f'👤 Previous user: {prev_user}')
+            print(f'⚖️  Previous weight: {prev_weight}g')
+            print(f'📋 Previous protocol: {prev_protocol}')
+            print(f'🎯 Previous rule: [{int(prev_left_port)}]')
+            print(f'📊 Previous p_index: {prev_p_index}')
+            print(f'💧 Previous water total: {prev_water}µL')
+            print(f'🔢 Previous trial number: {prev_trials}')
+            print(f'📈 Previous resp fraction: L:{prev_L}, R:{prev_R}, N:{prev_N}')
+            if not np.isnan(prev_countdown):
+                print(f'⏱️  Reversal countdown: {int(prev_countdown)} trials')
+            print('='*50)
+        
+        # Verify that the protocol is the same as previous. If not, warn user.
+        if prev_protocol != protocol_name:
+            input('⚠️  WARNING: Using a different protocol than last time. '
+                  'Press Enter to continue if this is intentional...')
+        
+        return [prev_p_index, prev_left_port, prev_countdown, prev_expert]
+    
+    except Exception as e:
+        print(f"❌ Error reading previous data: {e}")
+        print("Returning default values...")
+        return [0, 1, np.nan, False]
 
 
 def delete_tones():
