@@ -24,11 +24,14 @@ box_folder_path = 'JCBeiqueLab/BeiqueLabData1/Behaviour Data/Jennifer/Fall2025'
 
 fetch = input('Fetch previous data? (y/n) ')
 if fetch == 'y':
-    [freq_rule, left_port, countdown] = (
+    [left_port, countdown, expert] = (
         core.get_previous_data(mouse_number, protocol_name))
 else:
     print('Warning: no previous data imported. Ensure that rule is correct, and'
           'that the performance criterion was not met recently.')
+    left_port = 1  # default value
+    countdown = np.nan  # default value
+    expert = False  # default value
 
 block_number = input('block number: ')
 n_trials = int(input('How many trials?: '))
@@ -41,7 +44,8 @@ if yesterday == 'n':
     countdown = np.nan
 
 if input('Enter initial countdown (y/n)?: ') == 'y':
-    countdown = int(input('Enter initial countdown value: '))
+    countdown_input = input('Enter initial countdown value: ')
+    countdown = float(countdown_input) if countdown_input else np.nan
 
     
 response_window = 2000 # Time window(ms) for animals to respond after cue.
@@ -115,6 +119,7 @@ highfreq = core.PureTone(high_freq, sample_tone_length)
 tone_wrong = core.PureTone(wrong_tone_freq, wrong_tone_length)
 tone_end = core.PureTone(end_tone_freq, end_tone_length, vol=-25)
 
+# Pass countdown directly without converting to int - it can be np.nan (float)
 rule = core.Rule([highfreq,lowfreq], left_port, criterion,
                  countdown_start, countdown)
 
