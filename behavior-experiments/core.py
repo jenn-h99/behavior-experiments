@@ -1,4 +1,4 @@
- #!/usr/bin/env python3
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 Created on Mon Jun 24 15:48:29 2019
@@ -1080,16 +1080,13 @@ def get_previous_data(mouse_number: str, protocol_name: str, countdown=True):
     --------
     A list, containing the following:
 
-    prev_p_index: int
-        The value of p_index for the last trial of the previous session.
-
-    prev_left_port: int
+    [0] prev_left_port: int
         The value of left_port for the last trial of the previous session.
 
-    trial_countdown: int/float
+    [1] trial_countdown: int/float
         The last value of the reversal trial countdown from the previous session.
 
-    prev_expert: bool
+    [2] prev_expert: bool
         Whether the mouse was marked as expert in the previous session.
     '''
     yesterday_data_path = '/home/pi/Desktop/yesterday_data/'
@@ -1098,7 +1095,7 @@ def get_previous_data(mouse_number: str, protocol_name: str, countdown=True):
     if not os.path.exists(yesterday_data_path):
         print(f"⚠️  No yesterday_data folder found at {yesterday_data_path}")
         print("Returning default values...")
-        return [0, 1, np.nan, False]
+        return [1, np.nan, False]
     
     # Get all .hdf5 files for this mouse
     all_files = os.listdir(yesterday_data_path)
@@ -1107,7 +1104,7 @@ def get_previous_data(mouse_number: str, protocol_name: str, countdown=True):
     if not mouse_files:
         print(f"⚠️  No previous data found for mouse {mouse_number}")
         print("Returning default values...")
-        return [0, 1, np.nan, False]
+        return [1, np.nan, False]
     
     # Get the most recent file (should only be one, but just in case)
     mouse_files.sort(reverse=True)  # Sort by filename (which includes date)
@@ -1158,12 +1155,12 @@ def get_previous_data(mouse_number: str, protocol_name: str, countdown=True):
             input('⚠️  WARNING: Using a different protocol than last time. '
                   'Press Enter to continue if this is intentional...')
         
-        return [prev_p_index, prev_left_port, prev_countdown, prev_expert]
+        return [prev_left_port, prev_countdown, prev_expert]
     
     except Exception as e:
         print(f"❌ Error reading previous data: {e}")
         print("Returning default values...")
-        return [0, 1, np.nan, False]
+        return [1, np.nan, False]
 
 
 def delete_tones():
