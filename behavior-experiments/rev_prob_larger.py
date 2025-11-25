@@ -52,8 +52,8 @@ end_tone_freq = 4000  # Tone to signal the end of the experiment.
 end_tone_length = 8
 reward_size = 10  # Volume(uL) of water rewards (standard reward).
 reward_steps = 250  # Steps for 70 µL (250 steps = 10 µL, so 70 µL = 1750 steps)
-large_reward_size = 100  # Volume(uL) of large reward for one random correct trial.
-large_reward_steps = 2500  # Steps for 100 µL (100 µL = 2500 steps)
+large_reward_size = 70  # Volume(uL) of large reward for one random correct trial.
+large_reward_steps = 1750   # Steps for 70 µL (70 µL = 1750  steps)
 p_rew = 1.0  # Probability of reward following correct choice
 criterion = [19,20]  # Mouse must get [0] of [1] correct to reach criterion.
 countdown_start = 500
