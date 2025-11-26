@@ -1,4 +1,4 @@
-import requests
+2import requests
 import json
 
 def get_tokens(auth_code):
@@ -25,5 +25,5 @@ def get_tokens(auth_code):
         print(f"Response: {response.text}")
 
 if __name__ == "__main__":
-    auth_code = 'QhT2THwUGWaypojJ4Ia8pSoQ78nYioa4'
+    auth_code = 'KP5dfnGMHKhezFkSDkfRAe9Gk6jjKRGz'
     get_tokens(auth_code)
