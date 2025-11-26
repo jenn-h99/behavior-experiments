@@ -1,4 +1,4 @@
-2import requests
+import requests
 import json
 
 def get_tokens(auth_code):
